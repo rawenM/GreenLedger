@@ -6,30 +6,30 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 
-<HBox xmlns="http://javafx.com/javafx/23.0.1"
+<HBox xmlns="http://javafx.com/javafx/20.0.2"
       xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="Controllers.CarbonAuditController"
-    styleClass="page">
+    spacing="0" styleClass="page">
 
-    <!-- Sidebar -->
+    <!-- Navigation Sidebar -->
     <VBox prefWidth="220" styleClass="sidebar">
 
         <HBox alignment="CENTER_LEFT" spacing="8">
             <Label text="🍃" style="-fx-font-size: 20px;"/>
-            <Label text="GreenLedger Test" styleClass="sidebar-title"/>
+            <Label text="GreenLedger Audit" styleClass="sidebar-title"/>
         </HBox>
 
         <Separator styleClass="sidebar-sep"/>
 
-        <Label text="📁 Gestion Projets" styleClass="nav-btn"/>
-        <Label text="📊 Évaluations" styleClass="nav-btn"/>
-
+        <Button fx:id="btnGestionProjets" text="📁 Gestion Projets" styleClass="nav-btn"/>
+        <Button fx:id="btnGestionEvaluations" text="📊 Gestion Évaluations" styleClass="nav-btn"/>
+        <Button fx:id="btnSettings" text="⚙ Settings" styleClass="nav-btn"/>
+        
+        <!-- Spacer to push content to bottom -->
         <Region VBox.vgrow="ALWAYS"/>
-
-        <Button fx:id="btnSettings" text="⚙ Settings" onAction="#showSettings" styleClass="nav-btn"/>
     </VBox>
 
-    <!-- Content Area -->
+    <!-- Content -->
     <VBox spacing="0" HBox.hgrow="ALWAYS" styleClass="content-area">
 
         <!-- Stats Section -->
@@ -39,20 +39,20 @@
             </padding>
 
             <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                <Label text="ÉVALUATIONS" styleClass="stat-title"/>
-                <Label text="0" styleClass="stat-value accent-green"/>
+                <Label text="PROJETS EN AUDIT" styleClass="stat-title"/>
+                <Label fx:id="lblProjetsAudit" text="0" styleClass="stat-value accent-green"/>
                 <Label text="📊" style="-fx-font-size: 18px;"/>
             </VBox>
 
             <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                <Label text="PROJETS DISPONIBLES" styleClass="stat-title"/>
-                <Label text="0" styleClass="stat-value accent-blue"/>
-                <Label text="📁" style="-fx-font-size: 18px;"/>
+                <Label text="PROJETS ÉVALUÉS" styleClass="stat-title"/>
+                <Label fx:id="lblProjetsEvalues" text="0" styleClass="stat-value accent-blue"/>
+                <Label text="✅" style="-fx-font-size: 18px;"/>
             </VBox>
 
             <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                <Label text="CRITÈRES" styleClass="stat-title"/>
-                <Label text="0" styleClass="stat-value accent-amber"/>
+                <Label text="CRITÈRES D'IMPACT" styleClass="stat-title"/>
+                <Label fx:id="lblCriteresImpact" text="0" styleClass="stat-value accent-amber"/>
                 <Label text="⚖️" style="-fx-font-size: 18px;"/>
             </VBox>
         </HBox>
@@ -64,117 +64,71 @@
                     <Insets top="8" right="32" bottom="32" left="32"/>
                 </padding>
 
-                <!-- Project Selection -->
+                <!-- Project Selection Section -->
                 <VBox spacing="12">
                     <HBox alignment="CENTER_LEFT" spacing="8">
                         <Label text="📁" style="-fx-font-size: 18px;"/>
                         <Label text="Sélection Projet" styleClass="page-title"/>
                     </HBox>
                     <ComboBox fx:id="comboProjet"
-                              promptText="Sélectionner un projet"
+                              promptText="Sélectionner un projet à auditer"
                               styleClass="field"
                               prefWidth="400"/>
-                </VBox>
 
-                <!-- Evaluations Table -->
-                <VBox spacing="12">
-                    <HBox alignment="CENTER_LEFT" spacing="8">
-                        <Label text="📋" style="-fx-font-size: 18px;"/>
-                        <Label text="Évaluations Récentes" styleClass="page-title"/>
-                    </HBox>
-                    <TableView fx:id="tableAudits"
-                               styleClass="table-card"
-                               style="-fx-pref-height: 220px;">
+                    <Label text="Evaluations recentes"
+                           styleClass="section-title-sidebar"/>
+                    <Label text="Cliquez une évaluation pour la charger dans le formulaire" styleClass="select-hint"/>
+
+                    <TableView fx:id="tableAudits" prefHeight="220" minHeight="220"
+                               VBox.vgrow="ALWAYS"
+                               styleClass="table-card table-projects">
                         <placeholder>
-                            <VBox alignment="CENTER" spacing="8" style="-fx-padding: 40;">
-                                <Label text="📋" style="-fx-font-size: 32px; -fx-opacity: 0.3;"/>
-                                <Label text="Aucune évaluation" styleClass="placeholder-label"/>
-                            </VBox>
+                            <Label text="Aucune evaluation" styleClass="placeholder-label"/>
                         </placeholder>
                         <columns>
-                            <TableColumn fx:id="colDate" text="Date" prefWidth="120"/>
-                            <TableColumn fx:id="colDecision" text="Décision" prefWidth="120"/>
-                            <TableColumn fx:id="colProjetNom" text="Titre" prefWidth="200"/>
-                            <TableColumn fx:id="colObservations" text="Observations" prefWidth="400"/>
+                            <TableColumn fx:id="colDate" text="Date" prefWidth="140" styleClass="col-center"/>
+                            <TableColumn fx:id="colDecision" text="Decision" prefWidth="120" styleClass="col-center"/>
+                            <TableColumn fx:id="colProjetNom" text="Titre projet" prefWidth="220" styleClass="col-left"/>
+                            <TableColumn fx:id="colObservations" text="Observations" prefWidth="360" styleClass="col-left"/>
                         </columns>
                     </TableView>
                 </VBox>
 
-                <!-- Projects Table -->
-                <VBox spacing="12">
-                    <HBox alignment="CENTER_LEFT" spacing="8">
-                        <Label text="📂" style="-fx-font-size: 18px;"/>
-                        <Label text="Projets Disponibles" styleClass="page-title"/>
-                    </HBox>
-                    <TableView fx:id="tableProjets"
-                               styleClass="table-card"
-                               style="-fx-pref-height: 280px;">
-                        <placeholder>
-                            <VBox alignment="CENTER" spacing="8" style="-fx-padding: 40;">
-                                <Label text="📂" style="-fx-font-size: 32px; -fx-opacity: 0.3;"/>
-                                <Label text="Aucun projet disponible" styleClass="placeholder-label"/>
-                            </VBox>
-                        </placeholder>
-                        <columns>
-                            <TableColumn fx:id="colProjetTitre" text="Titre" prefWidth="180"/>
-                            <TableColumn fx:id="colProjetDescription" text="Description" prefWidth="300"/>
-                            <TableColumn fx:id="colProjetBudget" text="Budget" prefWidth="120"/>
-                            <TableColumn fx:id="colProjetScore" text="Score ESG" prefWidth="100"/>
-                            <TableColumn fx:id="colProjetStatut" text="Statut" prefWidth="140"/>
-                        </columns>
-                    </TableView>
-                </VBox>
-
-                <!-- Evaluation Form -->
-                <VBox spacing="16" styleClass="card">
+                <!-- Evaluation CRUD Section -->
+                <VBox spacing="12" styleClass="card">
                     <padding>
-                        <Insets top="24" right="24" bottom="24" left="24"/>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
                     </padding>
 
                     <HBox alignment="CENTER_LEFT" spacing="8">
-                        <Label text="✍️" style="-fx-font-size: 18px;"/>
-                        <Label text="Nouvelle Évaluation" styleClass="page-title"/>
+                        <Label text="📝" style="-fx-font-size: 18px;"/>
+                        <Label text="Évaluer le Projet" styleClass="page-title"/>
                     </HBox>
 
-                    <Separator/>
-
                     <HBox spacing="12">
-                        <VBox spacing="8" prefWidth="150">
+                        <VBox spacing="8" prefWidth="220">
                             <Label text="ID Projet" styleClass="form-label"/>
-                            <TextField fx:id="txtIdProjet"
-                                       editable="false"
-                                       focusTraversable="false"
-                                       styleClass="field field-readonly"/>
+                            <TextField fx:id="txtIdProjet" editable="false" styleClass="field"/>
                         </VBox>
                         <VBox spacing="8" HBox.hgrow="ALWAYS">
-                            <Label text="Décision" styleClass="form-label"/>
-                            <TextField fx:id="txtDecision"
-                                       promptText="Ex: Approuvé, En attente"
-                                       styleClass="field"/>
+                            <Label text="Decision" styleClass="form-label"/>
+                            <TextField fx:id="txtDecision" promptText="Approuver / Rejeter" styleClass="field"/>
                         </VBox>
                     </HBox>
 
                     <VBox spacing="8">
                         <Label text="Observations" styleClass="form-label"/>
                         <TextArea fx:id="txtObservations"
-                                  promptText="Notes détaillées..."
+                                  promptText="Commentaires sur l'evaluation..."
                                   wrapText="true"
                                   styleClass="field textarea"
-                                  style="-fx-pref-height: 90px;"/>
+                                  style="-fx-pref-height: 100px;"/>
                     </VBox>
 
-                    <Separator/>
-
                     <HBox spacing="12">
-                        <Button text="➕ Ajouter Évaluation"
-                                onAction="#ajouterEvaluation"
-                                styleClass="btn-primary"/>
-                        <Button text="✏️ Modifier Évaluation"
-                                onAction="#modifierEvaluation"
-                                styleClass="btn-secondary"/>
-                        <Button text="🗑️ Supprimer Évaluation"
-                                onAction="#supprimerEvaluation"
-                                styleClass="btn-danger"/>
+                        <Button text="➕ Ajouter" onAction="#ajouterEvaluation" styleClass="btn-primary"/>
+                        <Button text="✏️ Modifier" onAction="#modifierEvaluation" styleClass="btn-secondary"/>
+                        <Button text="🗑️ Supprimer" onAction="#supprimerEvaluation" styleClass="btn-danger"/>
                     </HBox>
                 </VBox>
 
@@ -190,12 +144,12 @@
                     </HBox>
 
                     <TableView fx:id="tableCriteres"
-                               styleClass="table-card"
-                               style="-fx-pref-height: 180px;">
+                               styleClass="table-card selectable-table"
+                               style="-fx-pref-height: 200px;">
                         <placeholder>
                             <VBox alignment="CENTER" spacing="8" style="-fx-padding: 40;">
                                 <Label text="⚖️" style="-fx-font-size: 32px; -fx-opacity: 0.3;"/>
-                                <Label text="Aucun critère" styleClass="placeholder-label"/>
+                                <Label text="Aucun critère défini" styleClass="placeholder-label"/>
                             </VBox>
                         </placeholder>
                         <columns>
@@ -211,7 +165,7 @@
                         <VBox spacing="8" HBox.hgrow="ALWAYS">
                             <Label text="Nom du critère" styleClass="form-label"/>
                             <TextField fx:id="txtNomCritere"
-                                       promptText="Ex: Impact Carbone"
+                                       promptText="Ex: Émissions CO2"
                                        styleClass="field"/>
                         </VBox>
                         <VBox spacing="8" prefWidth="150">
@@ -223,12 +177,12 @@
                     </HBox>
 
                     <VBox spacing="8">
-                        <Label text="Commentaire" styleClass="form-label"/>
+                        <Label text="Commentaire technique" styleClass="form-label"/>
                         <TextArea fx:id="txtCommentaireCritere"
-                                  promptText="Détails techniques..."
+                                  promptText="Détails sur le critère d'impact..."
                                   wrapText="true"
                                   styleClass="field textarea"
-                                  style="-fx-pref-height: 70px;"/>
+                                  style="-fx-pref-height: 80px;"/>
                     </VBox>
 
                     <HBox spacing="12">

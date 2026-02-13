@@ -1,0 +1,394 @@
+/* Charcoal + Emerald */
+
+/* ===== ROOT & BACKGROUNDS ===== */
+.root {
+    -fx-background-color: #0E1114;
+}
+
+.app-container {
+    -fx-background-color: #0E1114;
+}
+
+.content-area {
+    -fx-background-color: #0E1114;
+}
+
+.sidebar {
+    -fx-background-color: #151A21;
+    -fx-border-color: #2B3440;
+}
+
+.page {
+    -fx-background-color: #0E1114;
+}
+
+.card {
+    -fx-background-color: #1A212B;
+    -fx-border-color: #2B3440;
+}
+
+.table-card {
+    -fx-background-color: #1A212B;
+    -fx-border-color: #2B3440;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: #0E1114;
+}
+
+.stat-card {
+    -fx-background-color: #1A212B;
+    -fx-border-color: #2B3440;
+}
+
+.stat-card:hover {
+    -fx-background-color: #1F2833;
+    -fx-border-color: #3A4655;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.page-title {
+    -fx-text-fill: #E7EDF2;
+}
+
+.page-subtitle {
+    -fx-text-fill: #A0ACB8;
+}
+
+.section-title-sidebar {
+    -fx-text-fill: #758190;
+}
+
+.stat-title {
+    -fx-text-fill: #9AA7B3;
+}
+
+.stat-value {
+    -fx-text-fill: #50C38F;
+}
+
+.brand-title {
+    -fx-text-fill: #50C38F;
+}
+
+.brand-subtitle {
+    -fx-text-fill: #A0ACB8;
+}
+
+.form-label {
+    -fx-text-fill: #A0ACB8;
+}
+
+.muted-note {
+    -fx-text-fill: #7B8794;
+}
+
+.status-text-success {
+    -fx-text-fill: #50C38F;
+}
+
+.label {
+    -fx-text-fill: #D7E1E7;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+    -fx-background-color: #2F8F6D;
+    -fx-text-fill: #0E1114;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #36A87D;
+}
+
+.btn-primary:pressed {
+    -fx-background-color: #267055;
+}
+
+.btn-secondary {
+    -fx-background-color: transparent;
+    -fx-border-color: #2F8F6D;
+    -fx-text-fill: #7DD7AE;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #1A2321;
+}
+
+.btn-danger {
+    -fx-background-color: #D96B6B;
+    -fx-text-fill: #0E1114;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #E07B7B;
+}
+
+.nav-btn {
+    -fx-text-fill: #A0ACB8;
+    -fx-background-color: transparent;
+}
+
+.nav-btn:hover {
+    -fx-background-color: #1E2630;
+    -fx-text-fill: #50C38F;
+}
+
+.nav-btn:pressed {
+    -fx-background-color: #182028;
+}
+
+.nav-btn:focused {
+    -fx-background-color: #1E2630;
+    -fx-text-fill: #50C38F;
+}
+
+/* ===== FORM FIELDS ===== */
+.field {
+    -fx-background-color: #232C39;
+    -fx-border-color: #3A4655;
+    -fx-text-fill: #E7EDF2;
+    -fx-prompt-text-fill: #6E7C88;
+}
+
+.field:focused {
+    -fx-border-color: #2F8F6D;
+}
+
+.field:hover {
+    -fx-border-color: #465566;
+}
+
+.field-readonly {
+    -fx-background-color: #273142;
+    -fx-text-fill: #97A3AE;
+}
+
+/* ===== TABLES ===== */
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #161D25;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: #2B3440;
+    -fx-text-fill: #A0ACB8;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #D7E1E7;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #1A212B;
+    -fx-border-color: #232C36;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #202A35;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #223A31;
+}
+
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: #7DD7AE;
+}
+
+/* ===== SCROLLBARS ===== */
+.scroll-bar .thumb {
+    -fx-background-color: #3A4655;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #4A5868;
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #56677A;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #1B2430;
+}
+
+/* ===== SEPARATORS ===== */
+.separator .line {
+    -fx-border-color: #2B3440;
+}
+
+.sidebar-sep .line {
+    -fx-border-color: #2B3440;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    -fx-background-color: #151A21;
+    -fx-border-color: #2B3440;
+}
+
+.topbar-title {
+    -fx-text-fill: #E7EDF2;
+}
+
+.topbar-subtitle {
+    -fx-text-fill: #A0ACB8;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    -fx-background-color: #223A31;
+    -fx-text-fill: #7DD7AE;
+    -fx-border-color: #2F8F6D;
+}
+
+.badge-success {
+    -fx-background-color: #223A31;
+    -fx-text-fill: #7DD7AE;
+    -fx-border-color: #2F8F6D;
+}
+
+.badge-warning {
+    -fx-background-color: #3A3222;
+    -fx-text-fill: #E7B95E;
+    -fx-border-color: #C58B2E;
+}
+
+.badge-danger {
+    -fx-background-color: #3A2727;
+    -fx-text-fill: #E7A0A0;
+    -fx-border-color: #D96B6B;
+}
+
+.badge-info {
+    -fx-background-color: #233140;
+    -fx-text-fill: #8FC1E2;
+    -fx-border-color: #5DA8D6;
+}
+
+/* ===== PROGRESS & INDICATORS ===== */
+.progress-bar > .track {
+    -fx-background-color: #2B3440;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: #2F8F6D;
+}
+
+.progress-indicator {
+    -fx-progress-color: #2F8F6D;
+}
+
+/* ===== COMBOBOX ===== */
+.combo-box {
+    -fx-background-color: #232C39;
+    -fx-border-color: #3A4655;
+    -fx-text-fill: #E7EDF2;
+}
+
+.combo-box:focused {
+    -fx-border-color: #2F8F6D;
+}
+
+.combo-box:hover {
+    -fx-border-color: #465566;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #232C39;
+    -fx-border-color: #3A4655;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-text-fill: #D7E1E7;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #202A35;
+    -fx-text-fill: #7DD7AE;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #2F8F6D;
+    -fx-text-fill: #0E1114;
+}
+
+/* ===== CHECKBOX & RADIO ===== */
+.check-box {
+    -fx-text-fill: #D7E1E7;
+}
+
+.check-box > .box {
+    -fx-background-color: #1C242E;
+    -fx-border-color: #3A4655;
+}
+
+.check-box:selected > .box {
+    -fx-background-color: #2F8F6D;
+    -fx-border-color: #2F8F6D;
+}
+
+.check-box:hover > .box {
+    -fx-border-color: #36A87D;
+}
+
+.radio-button {
+    -fx-text-fill: #D7E1E7;
+}
+
+.radio-button > .radio {
+    -fx-background-color: #1C242E;
+    -fx-border-color: #3A4655;
+}
+
+.radio-button:selected > .radio {
+    -fx-border-color: #2F8F6D;
+}
+
+.radio-button:selected > .radio > .dot {
+    -fx-background-color: #2F8F6D;
+}
+
+.radio-button:hover > .radio {
+    -fx-border-color: #36A87D;
+}
+
+/* ===== PLACEHOLDER ===== */
+.placeholder-label {
+    -fx-text-fill: #7B8794;
+}
+
+/* ===== TEXT AREA ===== */
+.text-area {
+    -fx-border-color: #3A4655;
+}
+
+.text-area:focused {
+    -fx-border-color: #2F8F6D;
+}
+
+.text-area .content {
+    -fx-background-color: #1C242E;
+}
+
+/* ===== ACCENTS ===== */
+.accent-green {
+    -fx-text-fill: #50C38F;
+}
+
+.accent-blue {
+    -fx-text-fill: #5DA8D6;
+}
+
+.accent-amber {
+    -fx-text-fill: #E7B95E;
+}

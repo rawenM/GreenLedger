@@ -1,0 +1,469 @@
+/* GreenLedger Classic - Forest Canopy */
+
+/* ===== ROOT & BACKGROUNDS ===== */
+.root {
+    -fx-background-color: #0D1A12;
+        -fx-background-color: #132018;
+}
+
+.app-container {
+    -fx-background-color: #0D1A12;
+        -fx-background-color: #132018;
+}
+
+.page {
+    -fx-background-color: #0D1A12;
+        -fx-background-color: #132018;
+}
+
+.content-area {
+    -fx-background-color: #0D1A12;
+        -fx-background-color: #132018;
+}
+
+.sidebar {
+    -fx-background-color: #122015;
+    -fx-border-color: #24382A;
+        -fx-background-color: #1A2A1E;
+        -fx-border-color: #2F4636;
+}
+
+.card {
+    -fx-background-color: #14261B;
+    -fx-border-color: #2A3E31;
+        -fx-background-color: #1D2E23;
+        -fx-border-color: #2F4636;
+}
+
+.table-card {
+    -fx-background-color: #14261B;
+    -fx-border-color: #2A3E31;
+        -fx-background-color: #1D2E23;
+        -fx-border-color: #2F4636;
+}
+
+.stat-card {
+    -fx-background-color: #14261B;
+    -fx-border-color: #2A3E31;
+        -fx-background-color: #1D2E23;
+        -fx-border-color: #2F4636;
+}
+
+.stat-card:hover {
+    -fx-background-color: #172D20;
+    -fx-border-color: #355040;
+        -fx-background-color: #223629;
+        -fx-border-color: #3A5542;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.page-title {
+    -fx-text-fill: #E2F0E7;
+        -fx-text-fill: #E6F2EA;
+}
+
+.page-subtitle {
+    -fx-text-fill: #9FB2A6;
+        -fx-text-fill: #B4C5BA;
+}
+
+.section-title-sidebar {
+    -fx-text-fill: #7E9287;
+        -fx-text-fill: #8EA093;
+}
+
+.section-title {
+    -fx-text-fill: #DCEADF;
+        -fx-text-fill: #E1EFE6;
+}
+
+.stat-title {
+    -fx-text-fill: #A3B6AA;
+        -fx-text-fill: #B7C7BC;
+}
+
+.stat-value {
+    -fx-text-fill: #6ED39B;
+        -fx-text-fill: #7BE0AA;
+}
+
+.brand-title {
+    -fx-text-fill: #6ED39B;
+        -fx-text-fill: #7BE0AA;
+}
+
+.brand-subtitle {
+    -fx-text-fill: #9FB2A6;
+        -fx-text-fill: #B4C5BA;
+}
+
+.form-label {
+    -fx-text-fill: #A3B6AA;
+        -fx-text-fill: #B7C7BC;
+}
+
+.muted-note {
+    -fx-text-fill: #7E9287;
+        -fx-text-fill: #8EA093;
+}
+
+.status-text-success {
+    -fx-text-fill: #6ED39B;
+        -fx-text-fill: #7BE0AA;
+}
+
+.label {
+    -fx-text-fill: #D6E4DA;
+        -fx-text-fill: #DCEBE2;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+    -fx-background-color: #2F8F6D;
+    -fx-text-fill: #0D1A12;
+        -fx-text-fill: #132018;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #39A67C;
+}
+
+.btn-primary:pressed {
+    -fx-background-color: #267055;
+}
+
+.btn-secondary {
+    -fx-background-color: transparent;
+    -fx-border-color: #2F8F6D;
+    -fx-text-fill: #8DE0B7;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #1A2E23;
+}
+
+.btn-danger {
+    -fx-background-color: #C96A5E;
+    -fx-text-fill: #0D1A12;
+        -fx-text-fill: #132018;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #D77B70;
+}
+
+.nav-btn {
+    -fx-text-fill: #A3B6AA;
+    -fx-background-color: transparent;
+}
+
+.nav-btn:hover {
+    -fx-background-color: #1B2F24;
+    -fx-text-fill: #6ED39B;
+}
+
+.nav-btn:pressed {
+    -fx-background-color: #16251C;
+}
+
+.nav-btn:focused {
+    -fx-background-color: #1B2F24;
+    -fx-text-fill: #7BE0AA;
+}
+
+/* ===== FORM FIELDS ===== */
+.field {
+    -fx-background-color: #17291E;
+    -fx-border-color: #355040;
+        -fx-background-color: #1F3326;
+        -fx-border-color: #3A5542;
+    -fx-text-fill: #E2F0E7;
+    -fx-prompt-text-fill: #7E9287;
+        -fx-prompt-text-fill: #8EA093;
+}
+
+.field:focused {
+    -fx-border-color: #2F8F6D;
+}
+
+.field:hover {
+    -fx-border-color: #3D5A48;
+        -fx-border-color: #446252;
+}
+
+.field-readonly {
+    -fx-background-color: #1F3226;
+        -fx-background-color: #23372A;
+    -fx-text-fill: #A3B6AA;
+        -fx-background-color: #24382B;
+        -fx-text-fill: #B7C7BC;
+}
+
+/* ===== TABLES ===== */
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #122015;
+        -fx-background-color: #18271C;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: #24382A;
+    -fx-text-fill: #A3B6AA;
+        -fx-border-color: #2F4636;
+        -fx-text-fill: #B7C7BC;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #D6E4DA;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #14261B;
+    -fx-border-color: #223628;
+        -fx-background-color: #1D2E23;
+        -fx-border-color: #2A3E31;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #1A3023;
+        -fx-background-color: #24392B;
+            -fx-background-color: #2A3E31;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #223A2D;
+        -fx-background-color: #2B4535;
+}
+
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: #8DE0B7;
+        -fx-text-fill: #9BE6C2;
+}
+
+/* ===== SCROLLBARS ===== */
+.scroll-bar .thumb {
+    -fx-background-color: #355040;
+        -fx-background-color: #3A5542;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #3E5C4A;
+        -fx-background-color: #43624D;
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #476956;
+        -fx-background-color: #4C725A;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #13251A;
+        -fx-background-color: #1A2A1E;
+}
+
+/* ===== SEPARATORS ===== */
+.separator .line {
+    -fx-border-color: #24382A;
+        -fx-border-color: #2F4636;
+}
+
+.sidebar-sep .line {
+    -fx-border-color: #24382A;
+        -fx-border-color: #2F4636;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    -fx-background-color: #122015;
+    -fx-border-color: #24382A;
+        -fx-background-color: #1A2A1E;
+        -fx-border-color: #2F4636;
+}
+
+.topbar-title {
+    -fx-text-fill: #E2F0E7;
+        -fx-text-fill: #E6F2EA;
+}
+
+.topbar-subtitle {
+    -fx-text-fill: #9FB2A6;
+        -fx-text-fill: #B4C5BA;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    -fx-background-color: #223A2D;
+    -fx-text-fill: #8DE0B7;
+        -fx-background-color: #2B4535;
+        -fx-text-fill: #9BE6C2;
+    -fx-border-color: #2F8F6D;
+}
+
+.badge-success {
+    -fx-background-color: #223A2D;
+    -fx-text-fill: #8DE0B7;
+        -fx-background-color: #2B4535;
+        -fx-text-fill: #9BE6C2;
+    -fx-border-color: #2F8F6D;
+}
+
+.badge-warning {
+    -fx-background-color: #3A3322;
+    -fx-text-fill: #E6C07B;
+    -fx-border-color: #C58B2E;
+}
+
+.badge-danger {
+    -fx-background-color: #3A2A27;
+    -fx-text-fill: #E7A0A0;
+    -fx-border-color: #C96A5E;
+}
+
+.badge-info {
+    -fx-background-color: #233141;
+    -fx-text-fill: #8FC1E2;
+    -fx-border-color: #5DA8D6;
+}
+
+/* ===== PROGRESS & INDICATORS ===== */
+.progress-bar > .track {
+    -fx-background-color: #24382A;
+        -fx-background-color: #2F4636;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: #2F8F6D;
+}
+
+.progress-indicator {
+    -fx-progress-color: #2F8F6D;
+}
+
+/* ===== COMBOBOX ===== */
+.combo-box {
+    -fx-background-color: #17291E;
+    -fx-border-color: #355040;
+        -fx-background-color: #1F3326;
+            -fx-background-color: #23372A;
+        -fx-border-color: #3A5542;
+    -fx-text-fill: #E2F0E7;
+}
+
+.combo-box:focused {
+    -fx-border-color: #2F8F6D;
+}
+
+.combo-box:hover {
+    -fx-border-color: #3D5A48;
+        -fx-border-color: #446252;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #17291E;
+    -fx-border-color: #355040;
+        -fx-background-color: #1F3326;
+            -fx-background-color: #23372A;
+        -fx-border-color: #3A5542;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-text-fill: #D6E4DA;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #1A3023;
+    -fx-text-fill: #8DE0B7;
+        -fx-background-color: #24392B;
+        -fx-text-fill: #9BE6C2;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #2F8F6D;
+    -fx-text-fill: #0D1A12;
+        -fx-text-fill: #132018;
+}
+
+/* ===== CHECKBOX & RADIO ===== */
+.check-box {
+    -fx-text-fill: #D6E4DA;
+}
+
+.check-box > .box {
+    -fx-background-color: #17291E;
+    -fx-border-color: #355040;
+        -fx-background-color: #1F3326;
+        -fx-border-color: #3A5542;
+}
+
+.check-box:selected > .box {
+    -fx-background-color: #2F8F6D;
+    -fx-border-color: #2F8F6D;
+}
+
+.check-box:hover > .box {
+    -fx-border-color: #39A67C;
+        -fx-border-color: #46B088;
+}
+
+.radio-button {
+    -fx-text-fill: #D6E4DA;
+}
+
+.radio-button > .radio {
+    -fx-background-color: #17291E;
+    -fx-border-color: #355040;
+        -fx-background-color: #1F3326;
+        -fx-border-color: #3A5542;
+}
+
+.radio-button:selected > .radio {
+    -fx-border-color: #2F8F6D;
+}
+
+.radio-button:selected > .radio > .dot {
+    -fx-background-color: #2F8F6D;
+}
+
+.radio-button:hover > .radio {
+    -fx-border-color: #39A67C;
+        -fx-border-color: #46B088;
+}
+
+/* ===== PLACEHOLDER ===== */
+.placeholder-label {
+    -fx-text-fill: #7E9287;
+        -fx-text-fill: #8EA093;
+}
+
+/* ===== TEXT AREA ===== */
+.text-area {
+    -fx-border-color: #355040;
+        -fx-border-color: #3A5542;
+}
+
+.text-area:focused {
+    -fx-border-color: #2F8F6D;
+}
+
+.text-area .content {
+    -fx-background-color: #17291E;
+        -fx-background-color: #1F3326;
+}
+
+/* ===== ACCENTS ===== */
+.accent-green {
+    -fx-text-fill: #6ED39B;
+        -fx-text-fill: #7BE0AA;
+}
+
+.accent-blue {
+    -fx-text-fill: #5DA8D6;
+}
+
+.accent-amber {
+    -fx-text-fill: #E6C07B;
+}
