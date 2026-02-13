@@ -15,14 +15,17 @@ public class MainFX extends Application {
 
     private static Scene scene;
 
+    // ✅ Démarre uniquement sur ton écran Projet (change ici si besoin)
+    private static final String START_SCREEN = "GestionProjet"; // -> fichier: /projet_crud.fxml
+
     @Override
     public void start(Stage stage) throws IOException {
 
-        // Charger l'interface FXML disponible
-        Parent root = loadFXML("greenwallet");
+        // Charger uniquement ton interface FXML (Projet)
+        Parent root = loadFXML(START_SCREEN);
 
         scene = new Scene(root, 1100, 720);
-        
+
         // Initialize ThemeManager with the scene (applies saved theme)
         ThemeManager.getInstance().initialize(scene);
 
@@ -31,7 +34,7 @@ public class MainFX extends Application {
             stage.getIcons().add(new Image(iconUrl.toExternalForm()));
         }
 
-        stage.setTitle("Green Ledger");
+        stage.setTitle("Green Ledger - Projet (Test)");
         stage.setScene(scene);
         stage.setMinWidth(1000);
         stage.setMinHeight(600);
@@ -43,7 +46,7 @@ public class MainFX extends Application {
         scene.setRoot(loadFXML(fxml));
         // Theme persists because it's applied to Scene, not root!
     }
-    
+
     public static Scene getScene() {
         return scene;
     }

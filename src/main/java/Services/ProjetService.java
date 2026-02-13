@@ -9,74 +9,104 @@ import java.util.List;
 
 public class ProjetService {
 
-    Connection conn = MyConnection.getConnection();
+    private final Connection cnx = MyConnection.getConnection();
 
+    // ✅ Méthode attendue par tes controllers existants
     public List<Projet> afficher() {
+        String sql = "SELECT id, entreprise_id, titre, description, budget, statut, score_esg " +
+                "FROM projet ORDER BY date_creation DESC";
         List<Projet> list = new ArrayList<>();
-        String sql = "SELECT p.id, p.titre, p.description, p.budget, p.score_esg, p.statut, " +
-                "CASE WHEN EXISTS (SELECT 1 FROM evaluation e WHERE e.id_projet = p.id) " +
-                "THEN 'Evaluée' ELSE 'En attente' END AS statut_evaluation " +
-                "FROM projet p";
-        try {
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(sql);
+
+        try (PreparedStatement ps = cnx.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
-                Projet p = new Projet();
-                p.setId(rs.getInt("id"));
-                p.setTitre(rs.getString("titre"));
-                p.setDescription(rs.getString("description"));
-                p.setBudget(rs.getDouble("budget"));
-                double score = rs.getObject("score_esg") == null ? 0.0 : rs.getDouble("score_esg");
-                p.setScoreEsg(score);
-                String statut = rs.getString("statut_evaluation");
-                p.setStatutEvaluation(statut == null || statut.trim().isEmpty() ? "En attente" : statut);
-                list.add(p);
+                list.add(new Projet(
+                        rs.getInt("id"),
+                        rs.getInt("entreprise_id"),
+                        rs.getString("titre"),
+                        rs.getString("description"),
+                        rs.getDouble("budget"),
+                        rs.getInt("score_esg"),
+                        rs.getString("statut")
+                ));
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Erreur afficher projets: " + e.getMessage());
         }
+
         return list;
     }
 
-    public int ajouter(Projet projet) {
-        String sql = "INSERT INTO projet (titre, description, budget, statut, score_esg) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, projet.getTitre());
-            ps.setString(2, projet.getDescription());
-            ps.setDouble(3, projet.getBudget());
-            ps.setString(4, "En attente");
-            ps.setObject(5, null);
-            ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1);
+    // ✅ Utile pour ton CRUD "projet" à toi (par entreprise)
+    public List<Projet> getByEntreprise(int entrepriseId) {
+        String sql = "SELECT id, entreprise_id, titre, description, budget, statut, score_esg " +
+                "FROM projet WHERE entreprise_id=? ORDER BY date_creation DESC";
+        List<Projet> list = new ArrayList<>();
+
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, entrepriseId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Projet(
+                            rs.getInt("id"),
+                            rs.getInt("entreprise_id"),
+                            rs.getString("titre"),
+                            rs.getString("description"),
+                            rs.getDouble("budget"),
+                            rs.getInt("score_esg"),
+                            rs.getString("statut")
+                    ));
+                }
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Erreur getByEntreprise: " + e.getMessage());
         }
-        return -1;
+
+        return list;
     }
 
-    public void modifier(Projet projet) {
-        String sql = "UPDATE projet SET titre = ?, description = ?, budget = ? WHERE id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, projet.getTitre());
-            ps.setString(2, projet.getDescription());
-            ps.setDouble(3, projet.getBudget());
-            ps.setInt(4, projet.getId());
+    public void insert(Projet p) {
+        String sql = "INSERT INTO projet (entreprise_id, titre, description, budget, statut, score_esg) " +
+                "VALUES (?,?,?,?,?,?)";
+
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, p.getEntrepriseId());
+            ps.setString(2, p.getTitre());
+            ps.setString(3, p.getDescription());
+            ps.setDouble(4, p.getBudget());
+            ps.setString(5, p.getStatut());
+            ps.setInt(6, p.getScoreEsg());
             ps.executeUpdate();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Erreur insert projet: " + e.getMessage());
         }
     }
 
-    public void supprimer(int id) {
-        String sql = "DELETE FROM projet WHERE id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    public void update(Projet p) {
+        String sql = "UPDATE projet SET titre=?, description=?, budget=?, statut=?, score_esg=? WHERE id=?";
+
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, p.getTitre());
+            ps.setString(2, p.getDescription());
+            ps.setDouble(3, p.getBudget());
+            ps.setString(4, p.getStatut());
+            ps.setInt(5, p.getScoreEsg());
+            ps.setInt(6, p.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Erreur update projet: " + e.getMessage());
+        }
+    }
+
+    public void delete(int id) {
+        String sql = "DELETE FROM projet WHERE id=?";
+
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Erreur delete projet: " + e.getMessage());
         }
     }
 }
