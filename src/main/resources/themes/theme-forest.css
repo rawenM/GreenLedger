@@ -1,0 +1,356 @@
+/* Warm Sand + Forest */
+
+/* ===== ROOT & BACKGROUNDS ===== */
+.root {
+    -fx-background-color: #F4EFE7;
+}
+
+.sidebar {
+    -fx-background-color: #FAF6EE;
+    -fx-border-color: #E3D6C6;
+}
+
+.page {
+    -fx-background-color: #F4EFE7;
+}
+
+.card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E3D6C6;
+}
+
+.stat-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E3D6C6;
+}
+
+.stat-card:hover {
+    -fx-background-color: #FBF7F0;
+    -fx-border-color: #D2C2AE;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.page-title {
+    -fx-text-fill: #2A2A24;
+}
+
+.page-subtitle {
+    -fx-text-fill: #7A6F62;
+}
+
+.section-title-sidebar {
+    -fx-text-fill: #9A8E7F;
+}
+
+.stat-title {
+    -fx-text-fill: #7A6F62;
+}
+
+.stat-value {
+    -fx-text-fill: #2F6D4B;
+}
+
+.brand-title {
+    -fx-text-fill: #2F6D4B;
+}
+
+.brand-subtitle {
+    -fx-text-fill: #7A6F62;
+}
+
+.form-label {
+    -fx-text-fill: #7A6F62;
+}
+
+.muted-note {
+    -fx-text-fill: #9A8E7F;
+}
+
+.status-text-success {
+    -fx-text-fill: #2F6D4B;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+    -fx-background-color: #2F6D4B;
+    -fx-text-fill: #FFFFFF;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #275B3E;
+}
+
+.btn-primary:pressed {
+    -fx-background-color: #1F4A32;
+}
+
+.btn-secondary {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #2F6D4B;
+    -fx-text-fill: #2F6D4B;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #F0E6D8;
+}
+
+.btn-danger {
+    -fx-background-color: #C06154;
+    -fx-text-fill: #FFFFFF;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #AE564A;
+}
+
+.nav-btn {
+    -fx-text-fill: #7A6F62;
+    -fx-background-color: transparent;
+}
+
+.nav-btn:hover {
+    -fx-background-color: #EFE4D6;
+    -fx-text-fill: #2F6D4B;
+}
+
+.nav-btn:pressed {
+    -fx-background-color: #E1D4C2;
+}
+
+.nav-btn:focused {
+    -fx-background-color: #EFE4D6;
+    -fx-text-fill: #2F6D4B;
+}
+
+/* ===== FORM FIELDS ===== */
+.field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D8C8B4;
+    -fx-text-fill: #2A2A24;
+    -fx-prompt-text-fill: #9A8E7F;
+}
+
+.field:focused {
+    -fx-border-color: #2F6D4B;
+}
+
+.field:hover {
+    -fx-border-color: #C7B59E;
+}
+
+.field-readonly {
+    -fx-background-color: #EFE4D6;
+    -fx-text-fill: #7A6F62;
+}
+
+/* ===== TABLES ===== */
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #F4EFE7;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: #E3D6C6;
+    -fx-text-fill: #7A6F62;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #2A3A33;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #F1E6D8;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #FAF2E7;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #EFE4D6;
+}
+
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: #275B3E;
+}
+
+/* ===== SCROLLBARS ===== */
+.scroll-bar .thumb {
+    -fx-background-color: #C7B59E;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #B4A186;
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #9E8A6D;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #F1E6D8;
+}
+
+/* ===== SEPARATORS ===== */
+.separator .line {
+    -fx-border-color: #E3D6C6;
+}
+
+.sidebar-sep .line {
+    -fx-border-color: #E3D6C6;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E3D6C6;
+}
+
+.topbar-title {
+    -fx-text-fill: #2A2A24;
+}
+
+.topbar-subtitle {
+    -fx-text-fill: #7A6F62;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    -fx-background-color: #E2EAD6;
+    -fx-text-fill: #1F3E2B;
+    -fx-border-color: #2F6D4B;
+}
+
+.badge-success {
+    -fx-background-color: #E2EAD6;
+    -fx-text-fill: #1F3E2B;
+    -fx-border-color: #2F6D4B;
+}
+
+.badge-warning {
+    -fx-background-color: #F1E1C7;
+    -fx-text-fill: #7A5520;
+    -fx-border-color: #C78B3A;
+}
+
+.badge-danger {
+    -fx-background-color: #EFD8D2;
+    -fx-text-fill: #7A2F2A;
+    -fx-border-color: #C06154;
+}
+
+.badge-info {
+    -fx-background-color: #D8E2EA;
+    -fx-text-fill: #294257;
+    -fx-border-color: #3C6D8F;
+}
+
+/* ===== PROGRESS & INDICATORS ===== */
+.progress-bar > .track {
+    -fx-background-color: #E3D6C6;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: #2F6D4B;
+}
+
+.progress-indicator {
+    -fx-progress-color: #2F6D4B;
+}
+
+/* ===== COMBOBOX ===== */
+.combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D8C8B4;
+    -fx-text-fill: #2A2A24;
+}
+
+.combo-box:focused {
+    -fx-border-color: #2F6D4B;
+}
+
+.combo-box:hover {
+    -fx-border-color: #C7B59E;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E3D6C6;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-text-fill: #2A3A33;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #FAF2E7;
+    -fx-text-fill: #2F6D4B;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #2F6D4B;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* ===== CHECKBOX & RADIO ===== */
+.check-box {
+    -fx-text-fill: #2A3A33;
+}
+
+.check-box > .box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #C7B59E;
+}
+
+.check-box:selected > .box {
+    -fx-background-color: #2F6D4B;
+    -fx-border-color: #2F6D4B;
+}
+
+.check-box:hover > .box {
+    -fx-border-color: #2F6D4B;
+}
+
+.radio-button {
+    -fx-text-fill: #2A3A33;
+}
+
+.radio-button > .radio {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #C7B59E;
+}
+
+.radio-button:selected > .radio {
+    -fx-border-color: #2F6D4B;
+}
+
+.radio-button:selected > .radio > .dot {
+    -fx-background-color: #2F6D4B;
+}
+
+.radio-button:hover > .radio {
+    -fx-border-color: #2F6D4B;
+}
+
+/* ===== PLACEHOLDER ===== */
+.placeholder-label {
+    -fx-text-fill: #9A8E7F;
+}
+
+/* ===== ACCENTS ===== */
+.accent-green {
+    -fx-text-fill: #2F8C62;
+}
+
+.accent-blue {
+    -fx-text-fill: #3C6D8F;
+}
+
+.accent-amber {
+    -fx-text-fill: #C78B3A;
+}

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/20.0.2"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.MainController"
+            fx:id="rootPane"
+            styleClass="page">
+
+    <top>
+        <HBox spacing="12" alignment="CENTER_LEFT" styleClass="topbar">
+            <padding>
+                <Insets top="14" right="24" bottom="14" left="24"/>
+            </padding>
+            <Label text="🍃" style="-fx-font-size: 18px;"/>
+            <Label text="Gestion Évaluation Carbone" styleClass="topbar-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="✓ Session active" styleClass="status-text status-text-success"/>
+            <Button text="Déconnexion" onAction="#handleLogout" styleClass="btn-secondary"/>
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefWidth="220" styleClass="sidebar">
+
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label text="🍃" style="-fx-font-size: 20px;"/>
+                <Label text="GreenLedger" styleClass="sidebar-title"/>
+            </HBox>
+
+            <Separator styleClass="sidebar-sep"/>
+
+            <Button fx:id="btnUsers" text="👥 Gestion Users" onAction="#showUsers" styleClass="nav-btn"/>
+            <Button fx:id="btnProjet" text="📁 Gestion Projets" onAction="#showProjet" styleClass="nav-btn"/>
+            <Button fx:id="btnEvaluation" text="📊 Gestion Évaluation" onAction="#showEvaluation" styleClass="nav-btn"/>
+            <Button fx:id="btnFinancement" text="💰 Gestion Financement" onAction="#showFinancement" styleClass="nav-btn"/>
+            <Button fx:id="btnWallet" text="💳 Gestion Wallet" onAction="#showWallet" styleClass="nav-btn"/>
+            <Button fx:id="btnSettings" text="⚙ Settings" onAction="#showSettings" styleClass="nav-btn"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Separator styleClass="sidebar-sep"/>
+
+            <Label text="Modules visibles selon rôle" styleClass="muted-note" style="-fx-padding: 8 0 0 0;"/>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentPane" styleClass="content-area"/>
+    </center>
+</BorderPane>
+

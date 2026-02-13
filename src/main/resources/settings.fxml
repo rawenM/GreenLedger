@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx/20.0.2"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.SettingsController"
+      spacing="0" styleClass="app-container">
+
+    <!-- LEFT SIDEBAR -->
+    <VBox prefWidth="220" styleClass="sidebar" style="-fx-min-width: 220; -fx-max-width: 220;">
+
+        <!-- Logo/Brand Section -->
+        <VBox spacing="2" style="-fx-padding: 0 0 12 0;" alignment="CENTER_LEFT">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="⚙" style="-fx-font-size: 22; -fx-padding: 0;"/>
+                <VBox spacing="0">
+                    <Label text="Settings" styleClass="brand-title" style="-fx-font-size: 16; -fx-padding: 0;"/>
+                    <Label text="Preferences" styleClass="brand-subtitle" style="-fx-padding: 0;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <Separator styleClass="sidebar-sep"/>
+
+        <!-- Navigation Section -->
+        <Label text="SECTIONS" styleClass="section-title-sidebar"/>
+        <Button text="🎨 Appearance" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+
+        <Separator styleClass="sidebar-sep" style="-fx-padding: 4 0;"/>
+
+        <!-- Back Section -->
+        <Label text="NAVIGATION" styleClass="section-title-sidebar"/>
+        <Button fx:id="btnBack" text="⬅ Go back" onAction="#showWallet" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+
+        <Region VBox.vgrow="ALWAYS"/>
+    </VBox>
+
+    <!-- MAIN CONTENT -->
+    <VBox fx:id="contentPane" spacing="16" alignment="TOP_LEFT" styleClass="page" HBox.hgrow="ALWAYS">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <!-- PAGE HEADER -->
+        <VBox spacing="4">
+            <Label text="Settings" styleClass="page-title"/>
+            <Label text="Customize the look and feel of your workspace" styleClass="page-subtitle"/>
+        </VBox>
+
+        <!-- APPEARANCE SECTION -->
+        <VBox spacing="12" styleClass="card">
+            <Label text="Appearance" styleClass="section-title"/>
+            <Label text="Choose a theme that suits your environment" styleClass="muted-note"/>
+
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <VBox spacing="6" prefWidth="140">
+                    <Label text="Theme" styleClass="form-label"/>
+                    <ComboBox fx:id="themeSelector" styleClass="field" prefHeight="36"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Preview" styleClass="form-label"/>
+                    <Label text="Themes apply instantly across all views" styleClass="muted-note"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </VBox>
+</HBox>

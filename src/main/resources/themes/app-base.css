@@ -31,14 +31,9 @@
     -fx-background-color: #FCFDFC;
     -fx-border-width: 0 1 0 0;
     -fx-border-color: #E0E5E3;
-    -fx-padding: 0;
-    -fx-spacing: 0;
-    -fx-background-insets: 0;
-}
-
-.sidebar VBox {
-    -fx-spacing: 16;
     -fx-padding: 24 18 24 18;
+    -fx-spacing: 10;
+    -fx-background-insets: 0;
 }
 
 /* Brand Identity */

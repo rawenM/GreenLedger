@@ -1,0 +1,356 @@
+/* Nordic Slate + Teal */
+
+/* ===== ROOT & BACKGROUNDS ===== */
+.root {
+    -fx-background-color: #F2F5F7;
+}
+
+.sidebar {
+    -fx-background-color: #F7FAFB;
+    -fx-border-color: #D8E1E7;
+}
+
+.page {
+    -fx-background-color: #F2F5F7;
+}
+
+.card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D8E1E7;
+}
+
+.stat-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D8E1E7;
+}
+
+.stat-card:hover {
+    -fx-background-color: #F8FBFC;
+    -fx-border-color: #C3D1DB;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.page-title {
+    -fx-text-fill: #1B2A32;
+}
+
+.page-subtitle {
+    -fx-text-fill: #667987;
+}
+
+.section-title-sidebar {
+    -fx-text-fill: #8797A3;
+}
+
+.stat-title {
+    -fx-text-fill: #667987;
+}
+
+.stat-value {
+    -fx-text-fill: #2C6F7A;
+}
+
+.brand-title {
+    -fx-text-fill: #2C6F7A;
+}
+
+.brand-subtitle {
+    -fx-text-fill: #667987;
+}
+
+.form-label {
+    -fx-text-fill: #667987;
+}
+
+.muted-note {
+    -fx-text-fill: #8797A3;
+}
+
+.status-text-success {
+    -fx-text-fill: #2C6F7A;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+    -fx-background-color: #2C6F7A;
+    -fx-text-fill: #FFFFFF;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #245B64;
+}
+
+.btn-primary:pressed {
+    -fx-background-color: #1C4A52;
+}
+
+.btn-secondary {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #2C6F7A;
+    -fx-text-fill: #2C6F7A;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #E7EEF2;
+}
+
+.btn-danger {
+    -fx-background-color: #C35A4D;
+    -fx-text-fill: #FFFFFF;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #B05044;
+}
+
+.nav-btn {
+    -fx-text-fill: #667987;
+    -fx-background-color: transparent;
+}
+
+.nav-btn:hover {
+    -fx-background-color: #E7EEF2;
+    -fx-text-fill: #2C6F7A;
+}
+
+.nav-btn:pressed {
+    -fx-background-color: #D9E4EA;
+}
+
+.nav-btn:focused {
+    -fx-background-color: #E7EEF2;
+    -fx-text-fill: #2C6F7A;
+}
+
+/* ===== FORM FIELDS ===== */
+.field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #C7D3DC;
+    -fx-text-fill: #1B2A32;
+    -fx-prompt-text-fill: #8797A3;
+}
+
+.field:focused {
+    -fx-border-color: #2C6F7A;
+}
+
+.field:hover {
+    -fx-border-color: #B5C4D0;
+}
+
+.field-readonly {
+    -fx-background-color: #E7EEF2;
+    -fx-text-fill: #667987;
+}
+
+/* ===== TABLES ===== */
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #F2F5F7;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: #D8E1E7;
+    -fx-text-fill: #667987;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #2A3F52;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E9EFF3;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #F7FAFC;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #E7EEF2;
+}
+
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: #245B64;
+}
+
+/* ===== SCROLLBARS ===== */
+.scroll-bar .thumb {
+    -fx-background-color: #B5C4D0;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #9FB2C2;
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #8797A3;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #E9EFF3;
+}
+
+/* ===== SEPARATORS ===== */
+.separator .line {
+    -fx-border-color: #D8E1E7;
+}
+
+.sidebar-sep .line {
+    -fx-border-color: #D8E1E7;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D8E1E7;
+}
+
+.topbar-title {
+    -fx-text-fill: #1B2A32;
+}
+
+.topbar-subtitle {
+    -fx-text-fill: #667987;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    -fx-background-color: #D9E7E9;
+    -fx-text-fill: #1E3E44;
+    -fx-border-color: #2C6F7A;
+}
+
+.badge-success {
+    -fx-background-color: #D9E7E9;
+    -fx-text-fill: #1E3E44;
+    -fx-border-color: #2C6F7A;
+}
+
+.badge-warning {
+    -fx-background-color: #F2E3C9;
+    -fx-text-fill: #7A5520;
+    -fx-border-color: #C08A3A;
+}
+
+.badge-danger {
+    -fx-background-color: #EFD8D2;
+    -fx-text-fill: #7A2F2A;
+    -fx-border-color: #C35A4D;
+}
+
+.badge-info {
+    -fx-background-color: #D3E4F0;
+    -fx-text-fill: #23415C;
+    -fx-border-color: #3B7AA5;
+}
+
+/* ===== PROGRESS & INDICATORS ===== */
+.progress-bar > .track {
+    -fx-background-color: #D8E1E7;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: #2C6F7A;
+}
+
+.progress-indicator {
+    -fx-progress-color: #2C6F7A;
+}
+
+/* ===== COMBOBOX ===== */
+.combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #C7D3DC;
+    -fx-text-fill: #1B2A32;
+}
+
+.combo-box:focused {
+    -fx-border-color: #2C6F7A;
+}
+
+.combo-box:hover {
+    -fx-border-color: #B5C4D0;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D8E1E7;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-text-fill: #2A3F52;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #F7FAFC;
+    -fx-text-fill: #2C6F7A;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #2C6F7A;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* ===== CHECKBOX & RADIO ===== */
+.check-box {
+    -fx-text-fill: #2A3F52;
+}
+
+.check-box > .box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #B5C4D0;
+}
+
+.check-box:selected > .box {
+    -fx-background-color: #2C6F7A;
+    -fx-border-color: #2C6F7A;
+}
+
+.check-box:hover > .box {
+    -fx-border-color: #2C6F7A;
+}
+
+.radio-button {
+    -fx-text-fill: #2A3F52;
+}
+
+.radio-button > .radio {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #B5C4D0;
+}
+
+.radio-button:selected > .radio {
+    -fx-border-color: #2C6F7A;
+}
+
+.radio-button:selected > .radio > .dot {
+    -fx-background-color: #2C6F7A;
+}
+
+.radio-button:hover > .radio {
+    -fx-border-color: #2C6F7A;
+}
+
+/* ===== PLACEHOLDER ===== */
+.placeholder-label {
+    -fx-text-fill: #8797A3;
+}
+
+/* ===== ACCENTS ===== */
+.accent-green {
+    -fx-text-fill: #2F9A8A;
+}
+
+.accent-blue {
+    -fx-text-fill: #3B7AA5;
+}
+
+.accent-amber {
+    -fx-text-fill: #C08A3A;
+}

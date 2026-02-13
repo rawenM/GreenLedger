@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import Utils.ThemeManager;
+import Utils.NavigationContext;
 
 import java.io.IOException;
 
@@ -16,16 +18,28 @@ public class MainFX extends Application {
     public void start(Stage stage) throws IOException {
 
         // Charger l'interface FXML disponible
-        Parent root = loadFXML("test");
+        Parent root = loadFXML("gestioncarbone");
 
-        scene = new Scene(root, 1200, 800);
-        stage.setTitle("Carbon Expert Audit - Green Financing Platform");
+        scene = new Scene(root, 1100, 720);
+        
+        // Initialize ThemeManager with the scene (applies saved theme)
+        ThemeManager.getInstance().initialize(scene);
+        
+        stage.setTitle("Green Finance Audit - Green Ledger Wallet");
         stage.setScene(scene);
+        stage.setMinWidth(1000);
+        stage.setMinHeight(600);
         stage.show();
     }
 
     public static void setRoot(String fxml) throws IOException {
+        NavigationContext.getInstance().navigateTo(fxml);
         scene.setRoot(loadFXML(fxml));
+        // Theme persists because it's applied to Scene, not root!
+    }
+    
+    public static Scene getScene() {
+        return scene;
     }
 
     private static Parent loadFXML(String fxml) throws IOException {

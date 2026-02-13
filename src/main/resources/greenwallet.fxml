@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx/20.0.2"
+      xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="Controllers.GreenWalletController"
+    spacing="0" styleClass="app-container">
+
+    <!-- LEFT SIDEBAR -->
+    <VBox prefWidth="220" styleClass="sidebar" style="-fx-min-width: 220; -fx-max-width: 220;">
+
+        <!-- Logo/Brand Section -->
+        <VBox spacing="2" style="-fx-padding: 0 0 12 0;" alignment="CENTER_LEFT">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="🍃" style="-fx-font-size: 24; -fx-padding: 0;"/>
+                <VBox spacing="0">
+                    <Label text="GreenLedger" styleClass="brand-title" style="-fx-font-size: 16; -fx-padding: 0;"/>
+                    <Label text="Wallet" styleClass="brand-subtitle" style="-fx-padding: 0;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <Separator styleClass="sidebar-sep"/>
+
+        <!-- Navigation Section -->
+        <Label text="NAVIGATION" styleClass="section-title-sidebar"/>
+        <Button fx:id="btnWalletOverview" text="📊 Aperçu" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnOperations" text="📈 Opérations" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnFinancing" text="💰 Financements" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+
+        <Separator styleClass="sidebar-sep" style="-fx-padding: 4 0;"/>
+
+        <!-- Actions Section -->
+        <Label text="ACTIONS" styleClass="section-title-sidebar"/>
+        <Button fx:id="btnAddOperation" text="➕ Nouvelle Op." styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnExportData" text="⬇️ Exporter" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnSettings" text="⚙ Settings" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        
+        <!-- Spacer to push content to bottom -->
+        <Region VBox.vgrow="ALWAYS"/>
+    </VBox>
+
+    <!-- MAIN CONTENT -->
+    <VBox fx:id="contentPane" spacing="16" alignment="TOP_LEFT" styleClass="page" HBox.hgrow="ALWAYS">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <!-- PAGE HEADER -->
+        <VBox spacing="4">
+            <Label text="Portefeuille Vert" styleClass="page-title"/>
+            <Label text="Gestion centralisée des opérations de financement durable" styleClass="page-subtitle"/>
+        </VBox>
+
+        <!-- STAT CARDS ROW -->
+        <HBox spacing="12" style="-fx-min-height: 90;">
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="TOP_LEFT">
+                <Label text="💰 SOLDE TOTAL" styleClass="stat-title"/>
+                <Label fx:id="lblTotalBalance" text="€0,00" styleClass="stat-value"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="TOP_LEFT">
+                <Label text="📊 OPÉRATIONS" styleClass="stat-title"/>
+                <Label fx:id="lblTotalOperations" text="0" styleClass="stat-value" style="-fx-font-size: 24;"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="TOP_LEFT">
+                <Label text="⏳ EN ATTENTE" styleClass="stat-title"/>
+                <Label fx:id="lblPendingAmount" text="€0,00" styleClass="stat-value accent-amber" style="-fx-font-size: 20;"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="TOP_LEFT">
+                <Label text="✅ VALIDÉES" styleClass="stat-title"/>
+                <Label fx:id="lblValidatedAmount" text="€0,00" styleClass="stat-value accent-green" style="-fx-font-size: 20;"/>
+            </VBox>
+        </HBox>
+
+        <!-- SEARCH & FILTER SECTION -->
+        <VBox spacing="10" styleClass="card" style="-fx-padding: 18;">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="🔍" style="-fx-font-size: 14;"/>
+                <Label text="Recherche et Filtrage" styleClass="section-title" style="-fx-font-size: 14; -fx-padding: 0;"/>
+            </HBox>
+            
+            <HBox spacing="12">
+                <TextField fx:id="txtSearch" 
+                           promptText="Rechercher par ID, projet, type..."
+                           styleClass="field"
+                           HBox.hgrow="ALWAYS"
+                           prefHeight="36"/>
+                <ComboBox fx:id="filterStatus"
+                          promptText="Statut"
+                          styleClass="field"
+                          prefHeight="36"
+                          prefWidth="120"/>
+                <ComboBox fx:id="filterType"
+                          promptText="Type"
+                          styleClass="field"
+                          prefHeight="36"
+                          prefWidth="120"/>
+                <Button fx:id="btnRefresh" 
+                        text="🔄" 
+                        styleClass="btn btn-secondary"
+                        prefHeight="36"
+                        prefWidth="45"/>
+            </HBox>
+        </VBox>
+
+        <!-- OPERATIONS TABLE SECTION -->
+        <VBox spacing="10" styleClass="card" style="-fx-padding: 18;" VBox.vgrow="ALWAYS">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="📈" style="-fx-font-size: 14;"/>
+                <Label text="Opérations Récentes" styleClass="section-title" style="-fx-font-size: 14; -fx-padding: 0;"/>
+            </HBox>
+
+            <TableView fx:id="tableOperations" prefHeight="280" styleClass="table-card" VBox.vgrow="ALWAYS">
+                <placeholder>
+                    <VBox spacing="8" alignment="CENTER">
+                        <Label text="📋" style="-fx-font-size: 32; -fx-opacity: 0.3;"/>
+                        <Label text="Aucune opération" styleClass="placeholder-label" style="-fx-font-size: 13;"/>
+                        <Label text="Commencez par ajouter une nouvelle opération" styleClass="placeholder-label" style="-fx-font-size: 11;"/>
+                    </VBox>
+                </placeholder>
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="70"/>
+                    <TableColumn fx:id="colProjet" text="Projet" prefWidth="140"/>
+                    <TableColumn fx:id="colType" text="Type" prefWidth="100"/>
+                    <TableColumn fx:id="colAmount" text="Montant" prefWidth="110"/>
+                    <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
+                    <TableColumn fx:id="colStatut" text="Statut" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- ACTION BUTTONS -->
+        <HBox spacing="12" alignment="BOTTOM_LEFT" style="-fx-padding: 4 0 0 0;">
+            <Button fx:id="btnNewOperation" 
+                    text="➕  Nouvelle Opération" 
+                    styleClass="btn btn-primary"
+                    prefHeight="38"
+                    prefWidth="170"/>
+            <Button fx:id="btnExport" 
+                    text="📥  Exporter Données" 
+                    styleClass="btn btn-secondary"
+                    prefHeight="38"
+                    prefWidth="150"/>
+        </HBox>
+    </VBox>
+</HBox>
