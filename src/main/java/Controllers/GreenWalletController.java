@@ -1,131 +1,864 @@
 package Controllers;
 
+import Models.Wallet;
+import Models.OperationWallet;
+import Services.WalletService;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import org.GreenLedger.MainFX;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
 
+/**
+ * Controller for Green Wallet - Carbon Credit Management System.
+ */
 public class GreenWalletController extends BaseController {
 
-    // Sidebar Buttons
-    @FXML
-    private Button btnWalletOverview;
-    
-    @FXML
-    private Button btnOperations;
-    
-    @FXML
-    private Button btnFinancing;
-    
-    @FXML
-    private Button btnAddOperation;
+    // Services
+    private WalletService walletService;
+    private Wallet currentWallet;
 
-    @FXML
-    private Button btnSettings;
+    // Sidebar Buttons
+    @FXML private Button btnWalletOverview;
+    @FXML private Button btnTransactions;
+    @FXML private Button btnBatches;
+    @FXML private Button btnIssueCredits;
+    @FXML private Button btnRetireCredits;
+    @FXML private Button btnCreateWallet;
+    @FXML private Button btnSettings;
+
+    // Wallet Selector
+    @FXML private ComboBox<Wallet> cmbWalletSelector;
+
+    // Wallet Info Labels
+    @FXML private Label lblWalletNumber;
+    @FXML private Label lblHolderName;
+    @FXML private Label lblOwnerType;
+    @FXML private Label lblStatus;
 
     // Stat Cards
-    @FXML
-    private Label lblTotalBalance;
-    
-    @FXML
-    private Label lblTotalOperations;
-    
-    @FXML
-    private Label lblPendingAmount;
-    
-    @FXML
-    private Label lblValidatedAmount;
+    @FXML private Label lblAvailableCredits;
+    @FXML private Label lblRetiredCredits;
+    @FXML private Label lblTotalCredits;
 
-    // Search & Filter
-    @FXML
-    private TextField txtSearch;
-    
-    @FXML
-    private ComboBox<String> filterStatus;
-    
-    @FXML
-    private ComboBox<String> filterType;
-
-    // Table
-    @FXML
-    private TableView<String> tableOperations;
-    
-    @FXML
-    private TableColumn<String, String> colId;
-    
-    @FXML
-    private TableColumn<String, String> colProjet;
-    
-    @FXML
-    private TableColumn<String, String> colType;
-    
-    @FXML
-    private TableColumn<String, String> colAmount;
-    
-    @FXML
-    private TableColumn<String, String> colDate;
-    
-    @FXML
-    private TableColumn<String, String> colStatut;
-    
-    @FXML
-    private TableColumn<String, String> colAction;
+    // Transactions Table
+    @FXML private TableView<OperationWallet> tableTransactions;
+    @FXML private TableColumn<OperationWallet, Integer> colTransactionId;
+    @FXML private TableColumn<OperationWallet, String> colTransactionType;
+    @FXML private TableColumn<OperationWallet, Double> colTransactionAmount;
+    @FXML private TableColumn<OperationWallet, String> colTransactionDate;
+    @FXML private TableColumn<OperationWallet, String> colTransactionReference;
 
     // Action Buttons
-    @FXML
-    private Button btnNewOperation;
-    
-    @FXML
-    private Button btnExport;
-    
-    @FXML
-    private Button btnRefresh;
-    
-    @FXML
-    private Button btnExportData;
+    @FXML private Button btnIssueCreditsMain;
+    @FXML private Button btnRetireCreditsMain;
+    @FXML private Button btnTransferCredits;
+    @FXML private Button btnEditWallet;
+    @FXML private Button btnDeleteWallet;
+    @FXML private Button btnExport;
+    @FXML private Button btnRefresh;
 
     // Content Pane
-    @FXML
-    private VBox contentPane;
+    @FXML private VBox contentPane;
 
     @FXML
     public void initialize() {
-        super.initialize(); // Initialize theme selector from BaseController
+        super.initialize();
+        walletService = new WalletService();
         
-        // TODO: Initialize wallet data
+        setupTableColumns();
+        setupWalletSelector();
         setupListeners();
+        loadWallets();
+    }
+
+    private void setupTableColumns() {
+        colTransactionId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colTransactionType.setCellValueFactory(new PropertyValueFactory<>("type"));
+        colTransactionAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        
+        // Format date column
+        colTransactionDate.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getCreatedAt() != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                return new javafx.beans.property.SimpleStringProperty(
+                    cellData.getValue().getCreatedAt().format(formatter)
+                );
+            }
+            return new javafx.beans.property.SimpleStringProperty("—");
+        });
+        
+        colTransactionReference.setCellValueFactory(new PropertyValueFactory<>("referenceNote"));
+        
+        // Style type column
+        colTransactionType.setCellFactory(column -> new TableCell<OperationWallet, String>() {
+            @Override
+            protected void updateItem(String type, boolean empty) {
+                super.updateItem(type, empty);
+                if (empty || type == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(type);
+                    if (type.equals("ISSUE")) {
+                        setStyle("-fx-text-fill: #2B6A4A; -fx-font-weight: bold;");
+                    } else if (type.equals("RETIRE")) {
+                        setStyle("-fx-text-fill: #D97706; -fx-font-weight: bold;");
+                    } else if (type.contains("TRANSFER")) {
+                        setStyle("-fx-text-fill: #3B82F6; -fx-font-weight: bold;");
+                    }
+                }
+            }
+        });
+    }
+
+    private void setupWalletSelector() {
+        cmbWalletSelector.setConverter(new javafx.util.StringConverter<Wallet>() {
+            @Override
+            public String toString(Wallet wallet) {
+                if (wallet == null) return null;
+                String name = wallet.getName() != null ? wallet.getName() : "Unnamed Wallet";
+                return String.format("#%d - %s (%s)", wallet.getWalletNumber(), name, wallet.getOwnerType());
+            }
+
+            @Override
+            public Wallet fromString(String string) {
+                return null;
+            }
+        });
+        
+        cmbWalletSelector.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                loadWallet(newVal.getId());
+            }
+        });
     }
 
     private void setupListeners() {
         btnWalletOverview.setOnAction(e -> showWalletOverview());
-        btnOperations.setOnAction(e -> showOperations());
-        btnFinancing.setOnAction(e -> showFinancing());
-        btnAddOperation.setOnAction(e -> addNewOperation());
-        btnExportData.setOnAction(e -> exportData());
-        btnNewOperation.setOnAction(e -> addNewOperation());
+        btnTransactions.setOnAction(e -> showTransactions());
+        btnBatches.setOnAction(e -> showBatches());
+        
+        btnIssueCredits.setOnAction(e -> showQuickIssueDialog());
+        btnRetireCredits.setOnAction(e -> showRetireCreditsDialog());
+        btnCreateWallet.setOnAction(e -> showCreateWalletDialog());
+        
+        btnIssueCreditsMain.setOnAction(e -> showQuickIssueDialog());
+        btnRetireCreditsMain.setOnAction(e -> showRetireCreditsDialog());
+        
+        if (btnTransferCredits != null) {
+            btnTransferCredits.setOnAction(e -> showTransferDialog());
+        }
+        if (btnEditWallet != null) {
+            btnEditWallet.setOnAction(e -> showEditWalletDialog());
+        }
+        if (btnDeleteWallet != null) {
+            btnDeleteWallet.setOnAction(e -> showDeleteWalletDialog());
+        }
+        
         btnExport.setOnAction(e -> exportData());
         btnRefresh.setOnAction(e -> refreshData());
+        
         if (btnSettings != null) {
             btnSettings.setOnAction(e -> showSettings());
         }
+    }
+
+    // ==================== WALLET LOADING ====================
+
+    private void loadWallets() {
+        try {
+            List<Wallet> wallets = walletService.getAllWallets();
+            ObservableList<Wallet> walletList = FXCollections.observableArrayList(wallets);
+            cmbWalletSelector.setItems(walletList);
+            
+            // Select first wallet if available
+            if (!wallets.isEmpty()) {
+                cmbWalletSelector.getSelectionModel().select(0);
+            }
+        } catch (Exception e) {
+            showError("Erreur lors du chargement des wallets", e.getMessage());
+        }
+    }
+
+    private void loadWallet(int walletId) {
+        try {
+            currentWallet = walletService.getWalletById(walletId);
+            if (currentWallet != null) {
+                updateWalletDisplay();
+                loadTransactions();
+            }
+        } catch (Exception e) {
+            showError("Erreur lors du chargement du wallet", e.getMessage());
+        }
+    }
+
+    private void updateWalletDisplay() {
+        if (currentWallet == null) {
+            clearWalletDisplay();
+            return;
+        }
         
-        txtSearch.textProperty().addListener((obs, oldVal, newVal) -> searchOperations(newVal));
-        filterStatus.valueProperty().addListener((obs, oldVal, newVal) -> filterOperations());
-        filterType.valueProperty().addListener((obs, oldVal, newVal) -> filterOperations());
+        lblWalletNumber.setText(String.valueOf(currentWallet.getWalletNumber()));
+        lblHolderName.setText(currentWallet.getName() != null ? currentWallet.getName() : "Unnamed Wallet");
+        lblOwnerType.setText(currentWallet.getOwnerType());
+        lblStatus.setText("Active");
+        
+        // Update credit stats
+        lblAvailableCredits.setText(formatCredits(currentWallet.getAvailableCredits()));
+        lblRetiredCredits.setText(formatCredits(currentWallet.getRetiredCredits()));
+        lblTotalCredits.setText(formatCredits(currentWallet.getTotalCredits()));
+    }
+
+    private void clearWalletDisplay() {
+        lblWalletNumber.setText("—");
+        lblHolderName.setText("—");
+        lblOwnerType.setText("—");
+        lblStatus.setText("—");
+        lblAvailableCredits.setText("0.00 tCO₂");
+        lblRetiredCredits.setText("0.00 tCO₂");
+        lblTotalCredits.setText("0.00 tCO₂");
+        tableTransactions.setItems(FXCollections.observableArrayList());
+    }
+
+    private void loadTransactions() {
+        if (currentWallet == null) return;
+        
+        try {
+            List<OperationWallet> transactions = walletService.getWalletTransactions(currentWallet.getId());
+            ObservableList<OperationWallet> transactionList = FXCollections.observableArrayList(transactions);
+            tableTransactions.setItems(transactionList);
+        } catch (Exception e) {
+            showError("Erreur lors du chargement des transactions", e.getMessage());
+        }
+    }
+
+    // ==================== ACTIONS ====================
+
+    private void showCreateWalletDialog() {
+        Dialog<Wallet> dialog = new Dialog<>();
+        dialog.setTitle("🌱 Créer un Nouveau Wallet Carbone");
+        dialog.setHeaderText("Enregistrement d'un nouveau portefeuille de crédits carbone");
+
+        ButtonType createButtonType = new ButtonType("✓ Créer Wallet", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(createButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(12);
+        grid.setPadding(new Insets(20));
+
+        TextField walletName = new TextField();
+        walletName.setPromptText("Ex: Projet Solaire 2026, Reforestation Amazonie...");
+        walletName.setPrefWidth(300);
+        
+        TextField walletNumber = new TextField();
+        walletNumber.setPromptText("Laissez vide pour génération automatique");
+        
+        ComboBox<String> ownerType = new ComboBox<>();
+        ownerType.getItems().addAll("ENTERPRISE", "BANK", "NGO", "GOVERNMENT");
+        ownerType.setValue("ENTERPRISE");
+        
+        TextField ownerId = new TextField();
+        ownerId.setPromptText("ID entité");
+        ownerId.setText("1");
+        
+        TextField initialCredits = new TextField();
+        initialCredits.setPromptText("0.00");
+        initialCredits.setText("0");
+
+        grid.add(new Label("📛 Nom du Wallet:"), 0, 0);
+        grid.add(walletName, 1, 0);
+        grid.add(new Label("🔢 Numéro (optionnel):"), 0, 1);
+        grid.add(walletNumber, 1, 1);
+        grid.add(new Label("🏢 Type Propriétaire:"), 0, 2);
+        grid.add(ownerType, 1, 2);
+        grid.add(new Label("🆔 Owner ID:"), 0, 3);
+        grid.add(ownerId, 1, 3);
+        grid.add(new Label("💰 Crédits initiaux (tCO₂):"), 0, 4);
+        grid.add(initialCredits, 1, 4);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == createButtonType) {
+                try {
+                    Wallet wallet = new Wallet();
+                    wallet.setName(walletName.getText().isEmpty() ? "Unnamed Wallet" : walletName.getText());
+                    
+                    // Set wallet number if provided
+                    if (!walletNumber.getText().trim().isEmpty()) {
+                        wallet.setWalletNumber(Integer.parseInt(walletNumber.getText()));
+                    }
+                    
+                    wallet.setOwnerType(ownerType.getValue());
+                    wallet.setOwnerId(Integer.parseInt(ownerId.getText()));
+                    
+                    double credits = Double.parseDouble(initialCredits.getText());
+                    wallet.setAvailableCredits(Math.max(0, credits));
+                    wallet.setRetiredCredits(0.0);
+                    
+                    return wallet;
+                } catch (NumberFormatException e) {
+                    showError("Erreur de Saisie", "Veuillez vérifier les valeurs numériques");
+                    return null;
+                }
+            }
+            return null;
+        });
+
+        Optional<Wallet> result = dialog.showAndWait();
+        result.ifPresent(wallet -> {
+            try {
+                int id = walletService.createWallet(wallet);
+                if (id > 0) {
+                    showInfo("Succès", "Wallet créé avec succès!");
+                    loadWallets();
+                } else {
+                    showError("Erreur", "Impossible de créer le wallet");
+                }
+            } catch (Exception e) {
+                showError("Erreur lors de la création", e.getMessage());
+            }
+        });
+    }
+
+    private void showQuickIssueDialog() {
+        if (currentWallet == null) {
+            showWarning("Aucun wallet sélectionné", "Veuillez sélectionner un wallet");
+            return;
+        }
+
+        Dialog<String[]> dialog = new Dialog<>();
+        dialog.setTitle("🌱 Émettre des Crédits Carbone");
+        dialog.setHeaderText(String.format("Wallet: %s\nDisponible: %.2f tCO₂", 
+            currentWallet.getName(), currentWallet.getAvailableCredits()));
+
+        ButtonType issueButtonType = new ButtonType("✓ Émettre", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(issueButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(12);
+        grid.setPadding(new Insets(20));
+
+        TextField amount = new TextField();
+        amount.setPromptText("Montant (tCO₂)");
+        
+        ComboBox<String> presetAmounts = new ComboBox<>();
+        presetAmounts.getItems().addAll("100.00", "500.00", "1000.00", "5000.00", "Personnalisé");
+        presetAmounts.setValue("Personnalisé");
+        presetAmounts.setOnAction(e -> {
+            String val = presetAmounts.getValue();
+            if (!val.equals("Personnalisé")) {
+                amount.setText(val);
+            }
+        });
+        
+        ComboBox<String> sourcePresets = new ComboBox<>();
+        sourcePresets.getItems().addAll(
+            "🌞 Installation Solaire - Phase 1",
+            "🌲 Reforestation Amazonie",
+            "💨 Capture CO₂ Industrielle",
+            "⚡ Parc Éolien Offshore",
+            "🛰️ Vérification Projet Tiers",
+            "Autre source..."
+        );
+        sourcePresets.setValue("Autre source...");
+        
+        TextArea reference = new TextArea();
+        reference.setPromptText("Description de l'émission...");
+        reference.setPrefRowCount(3);
+        
+        sourcePresets.setOnAction(e -> {
+            String selected = sourcePresets.getValue();
+            if (!selected.equals("Autre source...")) {
+                reference.setText("Crédits émis depuis: " + selected);
+            }
+        });
+
+        grid.add(new Label("📊 Montant Rapide:"), 0, 0);
+        grid.add(presetAmounts, 1, 0);
+        grid.add(new Label("💰 Montant Exact (tCO₂):"), 0, 1);
+        grid.add(amount, 1, 1);
+        grid.add(new Label("🏭 Source:"), 0, 2);
+        grid.add(sourcePresets, 1, 2);
+        grid.add(new Label("📝 Référence:"), 0, 3);
+        grid.add(reference, 1, 3);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == issueButtonType) {
+                return new String[]{amount.getText(), reference.getText()};
+            }
+            return null;
+        });
+
+        Optional<String[]> result = dialog.showAndWait();
+        result.ifPresent(data -> {
+            try {
+                double amt = Double.parseDouble(data[0]);
+                String ref = data[1].isEmpty() ? "Émission de crédits carbone" : data[1];
+                
+                boolean success = walletService.quickIssueCredits(currentWallet.getId(), amt, ref);
+                if (success) {
+                    showInfo("✔ Succès", String.format("%.2f tCO₂ émis avec succès!", amt));
+                    refreshData();
+                } else {
+                    showError("Erreur", "Impossible d'émettre les crédits");
+                }
+            } catch (Exception e) {
+                showError("Erreur lors de l'émission", e.getMessage());
+            }
+        });
+    }
+
+    private void showEditWalletDialog() {
+        if (currentWallet == null) {
+            showWarning("Aucun wallet sélectionné", "Veuillez sélectionner un wallet");
+            return;
+        }
+
+        Dialog<Wallet> dialog = new Dialog<>();
+        dialog.setTitle("✏️ Modifier le Wallet");
+        dialog.setHeaderText("Modification du Wallet #" + currentWallet.getWalletNumber());
+
+        ButtonType saveButtonType = new ButtonType("💾 Sauvegarder", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(12);
+        grid.setPadding(new Insets(20));
+
+        TextField walletName = new TextField(currentWallet.getName());
+        walletName.setPrefWidth(300);
+        
+        ComboBox<String> ownerType = new ComboBox<>();
+        ownerType.getItems().addAll("ENTERPRISE", "BANK", "NGO", "GOVERNMENT");
+        ownerType.setValue(currentWallet.getOwnerType());
+        
+        Label walletNumberLabel = new Label("#" + currentWallet.getWalletNumber());
+        walletNumberLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
+        
+        Label creditsLabel = new Label(String.format("%.2f tCO₂ disponibles", currentWallet.getAvailableCredits()));
+        creditsLabel.setStyle("-fx-text-fill: #2B6A4A;");
+
+        grid.add(new Label("🔢 Numéro Wallet:"), 0, 0);
+        grid.add(walletNumberLabel, 1, 0);
+        grid.add(new Label("📛 Nom:"), 0, 1);
+        grid.add(walletName, 1, 1);
+        grid.add(new Label("🏢 Type:"), 0, 2);
+        grid.add(ownerType, 1, 2);
+        grid.add(new Label("💰 Solde:"), 0, 3);
+        grid.add(creditsLabel, 1, 3);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == saveButtonType) {
+                Wallet updated = new Wallet();
+                updated.setId(currentWallet.getId());
+                updated.setName(walletName.getText());
+                updated.setOwnerType(ownerType.getValue());
+                return updated;
+            }
+            return null;
+        });
+
+        Optional<Wallet> result = dialog.showAndWait();
+        result.ifPresent(wallet -> {
+            try {
+                boolean success = walletService.updateWallet(wallet);
+                if (success) {
+                    showInfo("✔ Succès", "Wallet modifié avec succès!");
+                    refreshData();
+                } else {
+                    showError("Erreur", "Impossible de modifier le wallet");
+                }
+            } catch (Exception e) {
+                showError("Erreur lors de la modification", e.getMessage());
+            }
+        });
+    }
+
+    private void showTransferDialog() {
+        if (currentWallet == null) {
+            showWarning("Aucun wallet sélectionné", "Veuillez sélectionner un wallet source");
+            return;
+        }
+
+        if (currentWallet.getAvailableCredits() <= 0) {
+            showWarning("🚫 Insufficient Funds", "Ce wallet n'a pas de crédits disponibles pour le transfert");
+            return;
+        }
+
+        Dialog<String[]> dialog = new Dialog<>();
+        dialog.setTitle("🔄 Transférer des Crédits");
+        dialog.setHeaderText(String.format("Source: %s\nDisponible: %.2f tCO₂", 
+            currentWallet.getName(), currentWallet.getAvailableCredits()));
+
+        ButtonType transferButtonType = new ButtonType("➡️ Transférer", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(transferButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(12);
+        grid.setPadding(new Insets(20));
+
+        ComboBox<Wallet> destinationWallet = new ComboBox<>();
+        List<Wallet> allWallets = walletService.getAllWallets();
+        allWallets.removeIf(w -> w.getId() == currentWallet.getId());
+        destinationWallet.setItems(FXCollections.observableArrayList(allWallets));
+        destinationWallet.setConverter(new javafx.util.StringConverter<Wallet>() {
+            @Override
+            public String toString(Wallet w) {
+                if (w == null) return null;
+                return String.format("#%d - %s", w.getWalletNumber(), w.getName());
+            }
+            @Override
+            public Wallet fromString(String s) { return null; }
+        });
+        
+        TextField amount = new TextField();
+        amount.setPromptText("Montant à transférer");
+        
+        ComboBox<String> quickAmounts = new ComboBox<>();
+        quickAmounts.getItems().addAll("25%", "50%", "75%", "100%", "Personnalisé");
+        quickAmounts.setValue("Personnalisé");
+        quickAmounts.setOnAction(e -> {
+            String val = quickAmounts.getValue();
+            if (!val.equals("Personnalisé")) {
+                double percentage = Double.parseDouble(val.replace("%", "")) / 100.0;
+                double amt = currentWallet.getAvailableCredits() * percentage;
+                amount.setText(String.format("%.2f", amt));
+            }
+        });
+        
+        TextArea reference = new TextArea();
+        reference.setPromptText("Raison du transfert (obligatoire)");
+        reference.setPrefRowCount(3);
+
+        grid.add(new Label("🎯 Destination:"), 0, 0);
+        grid.add(destinationWallet, 1, 0);
+        grid.add(new Label("📊 Montant Rapide:"), 0, 1);
+        grid.add(quickAmounts, 1, 1);
+        grid.add(new Label("💰 Montant (tCO₂):"), 0, 2);
+        grid.add(amount, 1, 2);
+        grid.add(new Label("📝 Raison:"), 0, 3);
+        grid.add(reference, 1, 3);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == transferButtonType) {
+                Wallet dest = destinationWallet.getValue();
+                if (dest == null) {
+                    showWarning("Destination requise", "Veuillez sélectionner un wallet de destination");
+                    return null;
+                }
+                return new String[]{String.valueOf(dest.getId()), amount.getText(), reference.getText()};
+            }
+            return null;
+        });
+
+        Optional<String[]> result = dialog.showAndWait();
+        result.ifPresent(data -> {
+            try {
+                int destId = Integer.parseInt(data[0]);
+                double amt = Double.parseDouble(data[1]);
+                String ref = data[2];
+                
+                if (ref.trim().isEmpty()) {
+                    showWarning("Référence requise", "Veuillez indiquer la raison du transfert");
+                    return;
+                }
+                
+                boolean success = walletService.transferCredits(currentWallet.getId(), destId, amt, ref);
+                if (success) {
+                    showInfo("✔ Transfert Réussi", String.format("%.2f tCO₂ transférés avec succès!", amt));
+                    refreshData();
+                } else {
+                    showError("Erreur", "Impossible de transférer les crédits");
+                }
+            } catch (Exception e) {
+                showError("Erreur lors du transfert", e.getMessage());
+            }
+        });
+    }
+
+    private void showIssueCreditsDialog() {
+        if (currentWallet == null) {
+            showWarning("Aucun wallet sélectionné", "Veuillez sélectionner un wallet");
+            return;
+        }
+
+        Dialog<double[]> dialog = new Dialog<>();
+        dialog.setTitle("Émettre des Crédits Carbone");
+        dialog.setHeaderText("Émission de crédits pour: Wallet #" + currentWallet.getWalletNumber());
+
+        ButtonType issueButtonType = new ButtonType("Émettre", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(issueButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20));
+
+        TextField projectId = new TextField();
+        projectId.setPromptText("ID du Projet");
+        
+        TextField amount = new TextField();
+        amount.setPromptText("Montant (tCO₂)");
+        
+        TextArea reference = new TextArea();
+        reference.setPromptText("Note de référence");
+        reference.setPrefRowCount(3);
+
+        grid.add(new Label("ID Projet:"), 0, 0);
+        grid.add(projectId, 1, 0);
+        grid.add(new Label("Montant:"), 0, 1);
+        grid.add(amount, 1, 1);
+        grid.add(new Label("Référence:"), 0, 2);
+        grid.add(reference, 1, 2);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == issueButtonType) {
+                try {
+                    int projId = Integer.parseInt(projectId.getText());
+                    double amt = Double.parseDouble(amount.getText());
+                    return new double[]{projId, amt};
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+            return null;
+        });
+
+        Optional<double[]> result = dialog.showAndWait();
+        result.ifPresent(data -> {
+            try {
+                int projId = (int) data[0];
+                double amt = data[1];
+                String ref = reference.getText();
+                
+                boolean success = walletService.issueCredits(currentWallet.getId(), projId, amt, ref);
+                if (success) {
+                    showInfo("Succès", amt + " tCO₂ émis avec succès!");
+                    refreshData();
+                } else {
+                    showError("Erreur", "Impossible d'émettre les crédits");
+                }
+            } catch (Exception e) {
+                showError("Erreur lors de l'émission", e.getMessage());
+            }
+        });
+    }
+
+    private void showRetireCreditsDialog() {
+        if (currentWallet == null) {
+            showWarning("Aucun wallet sélectionné", "Veuillez sélectionner un wallet");
+            return;
+        }
+
+        if (currentWallet.getAvailableCredits() <= 0) {
+            showWarning("🚫 Aucun Crédit Disponible", "Ce wallet n'a pas de crédits disponibles à retirer");
+            return;
+        }
+
+        Dialog<String[]> dialog = new Dialog<>();
+        dialog.setTitle("♻️ Retirer des Crédits Carbone");
+        dialog.setHeaderText(String.format("Wallet: %s\nDisponible: %.2f tCO₂", 
+            currentWallet.getName(), currentWallet.getAvailableCredits()));
+
+        ButtonType retireButtonType = new ButtonType("🔒 Retirer", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(retireButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(12);
+        grid.setPadding(new Insets(20));
+
+        ComboBox<String> quickAmounts = new ComboBox<>();
+        quickAmounts.getItems().addAll("25%", "50%", "75%", "100%", "Personnalisé");
+        quickAmounts.setValue("Personnalisé");
+        
+        TextField amount = new TextField();
+        amount.setPromptText("Montant (tCO₂)");
+        
+        quickAmounts.setOnAction(e -> {
+            String val = quickAmounts.getValue();
+            if (!val.equals("Personnalisé")) {
+                double percentage = Double.parseDouble(val.replace("%", "")) / 100.0;
+                double amt = currentWallet.getAvailableCredits() * percentage;
+                amount.setText(String.format("%.2f", amt));
+            }
+        });
+        
+        ComboBox<String> reasonPresets = new ComboBox<>();
+        reasonPresets.getItems().addAll(
+            "🌍 Compensation empreinte carbone entreprise",
+            "✈️ Neutralité carbone - Voyage aérien",
+            "🏭 Compensation production industrielle",
+            "🚗 Neutralisation émissions transport",
+            "🏢 Bilan carbone annuel - Neutralité",
+            "🎯 Objectif Net-Zero atteint",
+            "Autre raison..."
+        );
+        reasonPresets.setValue("Autre raison...");
+        
+        TextArea reference = new TextArea();
+        reference.setPromptText("Ex: Compensation carbone pour conférence internationale à Paris, 200 participants...");
+        reference.setPrefRowCount(4);
+        
+        reasonPresets.setOnAction(e -> {
+            String selected = reasonPresets.getValue();
+            if (!selected.equals("Autre raison...")) {
+                reference.setText(selected);
+            }
+        });
+
+        grid.add(new Label("📊 Montant Rapide:"), 0, 0);
+        grid.add(quickAmounts, 1, 0);
+        grid.add(new Label("💰 Montant Exact (tCO₂):"), 0, 1);
+        grid.add(amount, 1, 1);
+        grid.add(new Label("🏷️ Raison Type:"), 0, 2);
+        grid.add(reasonPresets, 1, 2);
+        grid.add(new Label("📝 Raison détaillée:"), 0, 3);
+        grid.add(reference, 1, 3);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == retireButtonType) {
+                return new String[]{amount.getText(), reference.getText()};
+            }
+            return null;
+        });
+
+        Optional<String[]> result = dialog.showAndWait();
+        result.ifPresent(data -> {
+            try {
+                double amt = Double.parseDouble(data[0]);
+                String ref = data[1];
+                
+                if (ref.trim().isEmpty()) {
+                    showWarning("Référence requise", "Veuillez indiquer la raison du retirement");
+                    return;
+                }
+                
+                boolean success = walletService.retireCredits(currentWallet.getId(), amt, ref);
+                if (success) {
+                    showInfo("✅ Retirement Effectué", String.format("%.2f tCO₂ retirés avec succès!\n\nCes crédits sont maintenant définitivement retirés du marché.", amt));
+                    refreshData();
+                } else {
+                    showError("Erreur", "Impossible de retirer les crédits");
+                }
+            } catch (Exception e) {
+                showError("Erreur lors du retirement", e.getMessage());
+            }
+        });
+    }
+
+    private void showDeleteWalletDialog() {
+        if (currentWallet == null) {
+            showWarning("Aucun wallet sélectionné", "Veuillez sélectionner un wallet");
+            return;
+        }
+
+        // Safety check: Can only delete wallets with zero balance
+        if (currentWallet.getTotalCredits() > 0) {
+            showWarning(
+                "🚫 Suppression Impossible", 
+                String.format(
+                    "Ce wallet contient encore des crédits:\n\n" +
+                    "💰 Disponibles: %.2f tCO₂\n" +
+                    "❌ Retirés: %.2f tCO₂\n" +
+                    "📊 Total: %.2f tCO₂\n\n" +
+                    "Vous devez d'abord transférer ou retirer tous les crédits disponibles.",
+                    currentWallet.getAvailableCredits(),
+                    currentWallet.getRetiredCredits(),
+                    currentWallet.getTotalCredits()
+                )
+            );
+            return;
+        }
+
+        // Confirmation dialog
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("⚠️ Confirmer la Suppression");
+        confirmation.setHeaderText("Supprimer le wallet #" + currentWallet.getWalletNumber() + "?");
+        confirmation.setContentText(
+            String.format(
+                "Wallet: %s\n" +
+                "Type: %s\n" +
+                "Owner ID: %d\n\n" +
+                "⚠️ Cette action est IRRÉVERSIBLE!\n" +
+                "Toutes les transactions associées seront également supprimées.\n\n" +
+                "Êtes-vous sûr de vouloir continuer?",
+                currentWallet.getName(),
+                currentWallet.getOwnerType(),
+                currentWallet.getOwnerId()
+            )
+        );
+
+        ButtonType btnDelete = new ButtonType("🗑️ Supprimer", ButtonBar.ButtonData.OK_DONE);
+        ButtonType btnCancel = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+        confirmation.getButtonTypes().setAll(btnDelete, btnCancel);
+
+        Optional<ButtonType> result = confirmation.showAndWait();
+        if (result.isPresent() && result.get() == btnDelete) {
+            try {
+                boolean success = walletService.deleteWallet(currentWallet.getId());
+                if (success) {
+                    showInfo("✅ Wallet Supprimé", "Le wallet a été supprimé avec succès!");
+                    currentWallet = null;
+                    loadWallets();
+                    clearWalletDisplay();
+                } else {
+                    showError("Erreur", "Impossible de supprimer le wallet");
+                }
+            } catch (Exception e) {
+                showError("Erreur lors de la suppression", e.getMessage());
+            }
+        }
     }
 
     private void showWalletOverview() {
-        // TODO: Display wallet overview
+        // Current view is already overview
+        refreshData();
     }
 
-    private void showOperations() {
-        // TODO: Display operations list
+    private void showTransactions() {
+        // Already showing transactions in main view
+        refreshData();
     }
 
-    private void showFinancing() {
-        // TODO: Display financing options
+    private void showBatches() {
+        showInfo("Bientôt disponible", "La vue des batches sera implémentée prochainement");
+    }
+
+    private void exportData() {
+        showInfo("Bientôt disponible", "La fonction d'export sera implémentée prochainement");
+    }
+
+    private void refreshData() {
+        if (currentWallet != null) {
+            loadWallet(currentWallet.getId());
+        }
     }
 
     private void showSettings() {
@@ -136,23 +869,33 @@ public class GreenWalletController extends BaseController {
         }
     }
 
-    private void addNewOperation() {
-        // TODO: Open dialog to add new operation
+    // ==================== UTILITY METHODS ====================
+
+    private String formatCredits(double credits) {
+        return String.format("%.2f tCO₂", credits);
     }
 
-    private void exportData() {
-        // TODO: Export wallet data
+    private void showInfo(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
-    private void refreshData() {
-        // TODO: Refresh data from database
+    private void showError(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
-    private void searchOperations(String query) {
-        // TODO: Implement search functionality
-    }
-
-    private void filterOperations() {
-        // TODO: Apply filters to table
+    private void showWarning(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
