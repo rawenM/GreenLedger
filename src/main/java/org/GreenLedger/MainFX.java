@@ -15,13 +15,13 @@ public class MainFX extends Application {
 
     private static Scene scene;
 
-    // ✅ Démarre uniquement sur ton écran Projet (change ici si besoin)
+
     private static final String START_SCREEN = "GestionProjet"; // -> fichier: /GestionProjet.fxml
 
     @Override
     public void start(Stage stage) throws IOException {
 
-        // Charger uniquement ton interface FXML (Projet)
+
         Parent root = loadFXML(START_SCREEN);
 
         scene = new Scene(root, 1100, 720);
