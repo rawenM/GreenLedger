@@ -20,7 +20,7 @@
 
         <Button text="📁 Gestion Projets" styleClass="nav-btn"/>
         <Button text="📊 Audit Carbone" styleClass="nav-btn"/>
-        <Button text="⚙ Settings" styleClass="nav-btn"/>
+        <Button fx:id="btnSettings" text="⚙ Settings" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
 
         <Region VBox.vgrow="ALWAYS"/>
         <Label text="Module Projet" style="-fx-opacity: 0.6; -fx-font-size: 11px;"/>
@@ -57,7 +57,7 @@
                 </VBox>
 
                 <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                    <Label text="SOUMIS / AUTRES" styleClass="stat-title"/>
+                    <Label text="SOUMIS" styleClass="stat-title"/>
                     <Label fx:id="lblLocked" text="0" styleClass="stat-value accent-green"/>
                     <Label text="🔒" style="-fx-font-size: 18px;"/>
                 </VBox>
@@ -79,7 +79,7 @@
 
                     <HBox alignment="CENTER_LEFT" spacing="8">
                         <Label text="📋" style="-fx-font-size: 18px;"/>
-                        <Label text="Liste des projets (double-clic pour détails)" styleClass="page-title"/>
+                        <Label text="Liste des projets" styleClass="page-title"/>
                     </HBox>
 
                     <TableView fx:id="table" prefHeight="520"

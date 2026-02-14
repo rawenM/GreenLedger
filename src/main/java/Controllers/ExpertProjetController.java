@@ -12,8 +12,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 import Models.Projet;
-import Services.ProjetService;
 import org.GreenLedger.MainFX;
+import Services.ProjetService;
+
 
 import java.io.IOException;
 
