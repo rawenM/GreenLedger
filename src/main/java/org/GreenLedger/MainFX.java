@@ -15,13 +15,12 @@ public class MainFX extends Application {
 
     private static Scene scene;
 
-    // ✅ Démarre uniquement sur ton écran Projet (change ici si besoin)
+
     private static final String START_SCREEN = "GestionProjet"; // -> fichier: /projet_crud.fxml
 
     @Override
     public void start(Stage stage) throws IOException {
 
-        // Charger uniquement ton interface FXML (Projet)
         Parent root = loadFXML(START_SCREEN);
 
         scene = new Scene(root, 1100, 720);
@@ -34,7 +33,7 @@ public class MainFX extends Application {
             stage.getIcons().add(new Image(iconUrl.toExternalForm()));
         }
 
-        stage.setTitle("Green Ledger - Projet (Test)");
+        stage.setTitle("Green Ledger");
         stage.setScene(scene);
         stage.setMinWidth(1000);
         stage.setMinHeight(600);
