@@ -15,10 +15,10 @@
         <!-- Logo/Brand Section -->
         <VBox spacing="2" style="-fx-padding: 0 0 12 0;" alignment="CENTER_LEFT">
             <HBox spacing="8" alignment="CENTER_LEFT">
-                <Label text="🍃" style="-fx-font-size: 24; -fx-padding: 0;"/>
+                <Label text="💼" style="-fx-font-size: 24; -fx-padding: 0;"/>
                 <VBox spacing="0">
                     <Label text="GreenLedger" styleClass="brand-title" style="-fx-font-size: 16; -fx-padding: 0;"/>
-                    <Label text="Wallet" styleClass="brand-subtitle" style="-fx-padding: 0;"/>
+                    <Label text="Financement" styleClass="brand-subtitle" style="-fx-padding: 0;"/>
                 </VBox>
             </HBox>
         </VBox>
@@ -27,22 +27,21 @@
 
         <!-- Navigation Section -->
         <Label text="NAVIGATION" styleClass="section-title-sidebar"/>
-        <Button fx:id="btnWalletOverview" text="📊 Aperçu" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
-        <Button fx:id="btnTransactions" text="📜 Transactions" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
-        <Button fx:id="btnBatches" text="📦 Batches" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnDashboard" text="📊 Tableau de bord" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnFinancement" text="💳 Financement" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnOffres" text="🧾 Offres" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
 
         <Separator styleClass="sidebar-sep" style="-fx-padding: 4 0;"/>
 
         <!-- Actions Section -->
         <Label text="ACTIONS" styleClass="section-title-sidebar"/>
-        <Button fx:id="btnIssueCredits" text="➕ Émettre Crédits" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
-        <Button fx:id="btnRetireCredits" text="❌ Retirer Crédits" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
-        <Button fx:id="btnCreateWallet" text="💼 Nouveau Wallet" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
-        <Button fx:id="btnSettings" text="⚙ Settings" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
-        
+        <Button fx:id="btnNewFinancement" text="➕ Nouveau" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnRefresh" text="🔄 Actualiser" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+
         <!-- Spacer to push content to bottom -->
         <Region VBox.vgrow="ALWAYS"/>
     </VBox>
+
 
     <!-- MAIN CONTENT -->
     <VBox fx:id="contentPane" spacing="16" alignment="TOP_LEFT" styleClass="page" HBox.hgrow="ALWAYS">

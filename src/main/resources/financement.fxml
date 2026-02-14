@@ -1,0 +1,137 @@
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx/20.0.2"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.FinancementController"
+      spacing="0" styleClass="app-container">
+
+    <!-- LEFT SIDEBAR -->
+    <VBox prefWidth="220" styleClass="sidebar" style="-fx-min-width: 220; -fx-max-width: 220;">
+
+        <!-- Logo/Brand Section -->
+        <VBox spacing="2" style="-fx-padding: 0 0 12 0;" alignment="CENTER_LEFT">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="💼" style="-fx-font-size: 24; -fx-padding: 0;"/>
+                <VBox spacing="0">
+                    <Label text="GreenLedger" styleClass="brand-title" style="-fx-font-size: 16; -fx-padding: 0;"/>
+                    <Label text="Financement" styleClass="brand-subtitle" style="-fx-padding: 0;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <Separator styleClass="sidebar-sep"/>
+
+        <!-- Navigation Section -->
+        <Label text="NAVIGATION" styleClass="section-title-sidebar"/>
+        <Button fx:id="btnDashboard" text="📊 Tableau de bord" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnFinancement" text="💳 Financement" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnOffres" text="🧾 Offres" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+
+        <Separator styleClass="sidebar-sep" style="-fx-padding: 4 0;"/>
+
+        <!-- Actions Section -->
+        <Label text="ACTIONS" styleClass="section-title-sidebar"/>
+        <Button fx:id="btnNewFinancement" text="➕ Nouveau" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnRefresh" text="🔄 Actualiser" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+
+        <!-- Spacer to push content to bottom -->
+        <Region VBox.vgrow="ALWAYS"/>
+    </VBox>
+
+
+    <!-- MAIN CONTENT -->
+    <VBox fx:id="contentPane" spacing="16" alignment="TOP_LEFT" styleClass="page" HBox.hgrow="ALWAYS">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <!-- PAGE HEADER -->
+        <VBox spacing="4">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="💳 Financement" styleClass="page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <ComboBox fx:id="cmbProjetSelector" promptText="Sélectionner Projet" prefWidth="220" styleClass="field"/>
+            </HBox>
+            <Label text="Gestion des financements et offres associées" styleClass="page-subtitle"/>
+        </VBox>
+
+        <!-- FINANCEMENT TABLE -->
+        <VBox spacing="10" styleClass="card" style="-fx-padding:18;">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="🏦" style="-fx-font-size:14;"/>
+                <Label text="Table2: Financement" styleClass="section-title" style="-fx-font-size:14; -fx-padding:0;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <TableView fx:id="tableFinancement" prefHeight="220" styleClass="table-card" VBox.vgrow="ALWAYS">
+                <placeholder>
+                    <VBox spacing="8" alignment="CENTER">
+                        <Label text="📋" style="-fx-font-size:32; -fx-opacity:0.3;"/>
+                        <Label text="Aucun financement" styleClass="placeholder-label" style="-fx-font-size:13;"/>
+                        <Label text="Les données de la table financement apparaîtront ici" styleClass="placeholder-label" style="-fx-font-size:11;"/>
+                    </VBox>
+                </placeholder>
+                <columns>
+                    <TableColumn fx:id="colFinId" text="ID" prefWidth="70"/>
+                    <TableColumn fx:id="colFinProjetId" text="Projet ID" prefWidth="100"/>
+                    <TableColumn fx:id="colFinBanqueId" text="Banque ID" prefWidth="110"/>
+                    <TableColumn fx:id="colFinMontant" text="Montant" prefWidth="140"/>
+                    <TableColumn fx:id="colFinDate" text="Date Financement" prefWidth="160"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- OFFRE TABLE -->
+        <VBox spacing="10" styleClass="card" style="-fx-padding:18;" VBox.vgrow="ALWAYS">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="🧾" style="-fx-font-size:14;"/>
+                <Label text="Table1: Offre de financement" styleClass="section-title" style="-fx-font-size:14; -fx-padding:0;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <TableView fx:id="tableOffres" prefHeight="240" styleClass="table-card" VBox.vgrow="ALWAYS">
+                <placeholder>
+                    <VBox spacing="8" alignment="CENTER">
+                        <Label text="📋" style="-fx-font-size:32; -fx-opacity:0.3;"/>
+                        <Label text="Aucune offre" styleClass="placeholder-label" style="-fx-font-size:13;"/>
+                        <Label text="Les données de la table offre_financement apparaîtront ici" styleClass="placeholder-label" style="-fx-font-size:11;"/>
+                    </VBox>
+                </placeholder>
+                <columns>
+                    <TableColumn fx:id="colOffreId" text="ID Offre" prefWidth="80"/>
+                    <TableColumn fx:id="colOffreType" text="Type Offre" prefWidth="130"/>
+                    <TableColumn fx:id="colOffreTaux" text="Taux" prefWidth="90"/>
+                    <TableColumn fx:id="colOffreDuree" text="Durée" prefWidth="110"/>
+                    <TableColumn fx:id="colOffreFinancementId" text="Financement ID" prefWidth="140"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- ACTION BUTTONS -->
+        <HBox spacing="12" alignment="BOTTOM_LEFT" style="-fx-padding:40000;">
+            <Button fx:id="btnAddFinancement"
+                    text="➕ Ajouter"
+                    styleClass="btn btn-primary"
+                    prefHeight="38"
+                    prefWidth="140"/>
+            <Button fx:id="btnEditFinancement"
+                    text="✏️ Modifier"
+                    styleClass="btn btn-secondary"
+                    prefHeight="38"
+                    prefWidth="140"/>
+            <Button fx:id="btnDeleteFinancement"
+                    text="🗑️ Supprimer"
+                    styleClass="btn btn-danger"
+                    prefHeight="38"
+                    prefWidth="140"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnExportFinancement"
+                    text="📥 Exporter"
+                    styleClass="btn btn-secondary"
+                    prefHeight="38"
+                    prefWidth="140"/>
+        </HBox>
+    </VBox>
+    </HBox>

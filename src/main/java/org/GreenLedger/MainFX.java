@@ -19,7 +19,7 @@ public class MainFX extends Application {
     public void start(Stage stage) throws IOException {
 
         // Charger l'interface FXML disponible
-        Parent root = loadFXML("greenwallet");
+        Parent root = loadFXML("financement");
 
         scene = new Scene(root, 1100, 720);
         
