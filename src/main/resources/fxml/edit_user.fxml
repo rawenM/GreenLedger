@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Controllers.EditUserController"
+            prefWidth="500" prefHeight="420">
+
+    <center>
+        <VBox spacing="10" style="-fx-padding:20;">
+            <Label text="Modifier l'utilisateur" style="-fx-font-size:16px; -fx-font-weight:bold;"/>
+
+            <GridPane hgap="10" vgap="10">
+                <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Prénom:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="prenomField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Téléphone:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="telephoneField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <Label text="Type:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="typeCombo" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                <Label text="Statut:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="statutCombo" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+            </GridPane>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="saveButton" text="Sauvegarder" onAction="#handleSave"/>
+                <Button text="Annuler" onAction="#handleCancel"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

@@ -500,7 +500,7 @@ public class GreenWalletController extends BaseController {
         }
 
         if (currentWallet.getAvailableCredits() <= 0) {
-            showWarning("🚫 Insufficient Funds", "Ce wallet n'a pas de crédits disponibles pour le transfert");
+            showWarning("[CLEAN] Insufficient Funds", "Ce wallet n'a pas de crédits disponibles pour le transfert");
             return;
         }
 
@@ -675,7 +675,7 @@ public class GreenWalletController extends BaseController {
         }
 
         if (currentWallet.getAvailableCredits() <= 0) {
-            showWarning("🚫 Aucun Crédit Disponible", "Ce wallet n'a pas de crédits disponibles à retirer");
+            showWarning("[CLEAN] Aucun Crédit Disponible", "Ce wallet n'a pas de crédits disponibles à retirer");
             return;
         }
 
@@ -762,7 +762,7 @@ public class GreenWalletController extends BaseController {
                 
                 boolean success = walletService.retireCredits(currentWallet.getId(), amt, ref);
                 if (success) {
-                    showInfo("✅ Retirement Effectué", String.format("%.2f tCO₂ retirés avec succès!\n\nCes crédits sont maintenant définitivement retirés du marché.", amt));
+                    showInfo("[CLEAN] Retirement Effectué", String.format("%.2f tCO₂ retirés avec succès!\n\nCes crédits sont maintenant définitivement retirés du marché.", amt));
                     refreshData();
                 } else {
                     showError("Erreur", "Impossible de retirer les crédits");
@@ -782,11 +782,11 @@ public class GreenWalletController extends BaseController {
         // Safety check: Can only delete wallets with zero balance
         if (currentWallet.getTotalCredits() > 0) {
             showWarning(
-                "🚫 Suppression Impossible", 
+                "[CLEAN] Suppression Impossible", 
                 String.format(
                     "Ce wallet contient encore des crédits:\n\n" +
                     "💰 Disponibles: %.2f tCO₂\n" +
-                    "❌ Retirés: %.2f tCO₂\n" +
+                    "[CLEAN] Retirés: %.2f tCO₂\n" +
                     "📊 Total: %.2f tCO₂\n\n" +
                     "Vous devez d'abord transférer ou retirer tous les crédits disponibles.",
                     currentWallet.getAvailableCredits(),
@@ -799,14 +799,14 @@ public class GreenWalletController extends BaseController {
 
         // Confirmation dialog
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("⚠️ Confirmer la Suppression");
+        confirmation.setTitle("[CLEAN] Confirmer la Suppression");
         confirmation.setHeaderText("Supprimer le wallet #" + currentWallet.getWalletNumber() + "?");
         confirmation.setContentText(
             String.format(
                 "Wallet: %s\n" +
                 "Type: %s\n" +
                 "Owner ID: %d\n\n" +
-                "⚠️ Cette action est IRRÉVERSIBLE!\n" +
+                "[CLEAN] Cette action est IRRÉVERSIBLE!\n" +
                 "Toutes les transactions associées seront également supprimées.\n\n" +
                 "Êtes-vous sûr de vouloir continuer?",
                 currentWallet.getName(),
@@ -815,8 +815,8 @@ public class GreenWalletController extends BaseController {
             )
         );
 
-        ButtonType btnDelete = new ButtonType("🗑️ Supprimer", ButtonBar.ButtonData.OK_DONE);
-        ButtonType btnCancel = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType btnDelete = new ButtonType("[CLEAN] Supprimer", ButtonBar.ButtonData.OK_DONE);
+        ButtonType btnCancel = new ButtonType("[CLEAN] Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
         confirmation.getButtonTypes().setAll(btnDelete, btnCancel);
 
         Optional<ButtonType> result = confirmation.showAndWait();
@@ -824,7 +824,7 @@ public class GreenWalletController extends BaseController {
             try {
                 boolean success = walletService.deleteWallet(currentWallet.getId());
                 if (success) {
-                    showInfo("✅ Wallet Supprimé", "Le wallet a été supprimé avec succès!");
+                    showInfo("[CLEAN] Wallet Supprimé", "Le wallet a été supprimé avec succès!");
                     currentWallet = null;
                     loadWallets();
                     clearWalletDisplay();
