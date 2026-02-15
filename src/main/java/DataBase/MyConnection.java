@@ -32,4 +32,26 @@ public class MyConnection {
     public static Connection getConnection() {
         return MyConnection.getInstance().conn;
     }
+
+    // Fermer la connexion
+    public void closeConnection() {
+        if (conn != null) {
+            try {
+                conn.close();
+                System.out.println("[CLEAN] Connexion fermée");
+            } catch (SQLException e) {
+                System.err.println("[CLEAN] Erreur lors de la fermeture de la connexion");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Tester la connexion
+    public boolean testConnection() {
+        try {
+            return conn != null && !conn.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 }
