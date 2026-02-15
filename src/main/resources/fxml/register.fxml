@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Controllers.RegisterController"
+            fx:id="rootPane"
+            prefHeight="700" prefWidth="900">
+
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+            <VBox alignment="CENTER" spacing="20" style="-fx-background-color: white; -fx-padding: 30;">
+                <padding>
+                    <Insets top="30" right="30" bottom="30" left="30"/>
+                </padding>
+
+                <VBox spacing="20" maxWidth="600" style="-fx-background-color: white; -fx-padding: 30; -fx-border-color: #E5E7EB; -fx-border-width: 1; -fx-border-radius: 10; -fx-background-radius: 10;">
+                    <padding>
+                        <Insets top="30" right="30" bottom="30" left="30"/>
+                    </padding>
+
+                    <!-- Titre -->
+                    <Label text="Créer un compte" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1F2937;"/>
+                    <Separator/>
+
+                    <!-- Messages -->
+                    <Label fx:id="errorLabel" visible="false" wrapText="true" style="-fx-text-fill: #EF4444; -fx-font-size: 12px;"/>
+                    <Label fx:id="successLabel" visible="false" wrapText="true" style="-fx-text-fill: #10B981; -fx-font-size: 12px;"/>
+
+                    <!-- Informations personnelles -->
+                    <Label text="Informations personnelles" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #374151;"/>
+
+                    <GridPane hgap="15" vgap="15">
+                        <!-- Nom -->
+                        <Label text="Nom *" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-size: 14px;"/>
+                        <TextField fx:id="nomField"
+                                   promptText="Votre nom"
+                                   GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                   style="-fx-font-size: 14px; -fx-pref-height: 35px;"/>
+
+                        <!-- Prénom -->
+                        <Label text="Prénom *" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-size: 14px;"/>
+                        <TextField fx:id="prenomField"
+                                   promptText="Votre prénom"
+                                   GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                   style="-fx-font-size: 14px; -fx-pref-height: 35px;"/>
+
+                        <!-- Email -->
+                        <Label text="Email *" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-size: 14px;"/>
+                        <TextField fx:id="emailField"
+                                   promptText="votre.email@example.com"
+                                   GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                   style="-fx-font-size: 14px; -fx-pref-height: 35px;"/>
+
+                        <!-- Téléphone -->
+                        <Label text="Téléphone" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-size: 14px;"/>
+                        <TextField fx:id="telephoneField"
+                                   promptText="0612345678"
+                                   GridPane.rowIndex="3" GridPane.columnIndex="1"
+                                   style="-fx-font-size: 14px; -fx-pref-height: 35px;"/>
+
+                        <!-- Date de naissance -->
+                        <Label text="Date de naissance" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-size: 14px;"/>
+                        <DatePicker fx:id="dateNaissancePicker"
+                                    GridPane.rowIndex="4" GridPane.columnIndex="1"
+                                    prefWidth="300"
+                                    style="-fx-font-size: 14px;"/>
+
+                        <columnConstraints>
+                            <ColumnConstraints minWidth="150" prefWidth="150"/>
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="300"/>
+                        </columnConstraints>
+                    </GridPane>
+
+                    <!-- Adresse -->
+                    <VBox spacing="5">
+                        <Label text="Adresse" style="-fx-font-size: 14px;"/>
+                        <TextArea fx:id="adresseField"
+                                  promptText="Votre adresse complète"
+                                  prefRowCount="3"
+                                  style="-fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <Separator/>
+
+                    <!-- Type de compte -->
+                    <Label text="Type de compte" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #374151;"/>
+                    <ComboBox fx:id="typeUtilisateurCombo" prefWidth="Infinity" style="-fx-font-size: 14px; -fx-pref-height: 35px;"/>
+
+                    <Separator/>
+
+                    <!-- Mot de passe -->
+                    <Label text="Sécurité" style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #374151;"/>
+
+                    <VBox spacing="5">
+                        <Label text="Mot de passe *" style="-fx-font-size: 14px;"/>
+                        <PasswordField fx:id="passwordField"
+                                       promptText="Minimum 8 caractères"
+                                       style="-fx-font-size: 14px; -fx-pref-height: 35px;"/>
+                        <Label text="Doit contenir: majuscule, minuscule, chiffre, caractère spécial"
+                               style="-fx-text-fill: #6B7280; -fx-font-size: 11px;"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Label text="Confirmer le mot de passe *" style="-fx-font-size: 14px;"/>
+                        <PasswordField fx:id="confirmPasswordField"
+                                       promptText="Confirmez votre mot de passe"
+                                       style="-fx-font-size: 14px; -fx-pref-height: 35px;"/>
+                    </VBox>
+
+                    <Separator/>
+
+                    <!-- CGU -->
+                    <CheckBox fx:id="acceptCGUCheckbox"
+                              text="J'accepte les conditions générales d'utilisation"
+                              wrapText="true"
+                              style="-fx-font-size: 13px;"/>
+
+                    <!-- Boutons -->
+                    <HBox spacing="10" alignment="CENTER">
+                        <Button fx:id="registerButton"
+                                text="S'inscrire"
+                                onAction="#handleRegister"
+                                prefWidth="150"
+                                prefHeight="40"
+                                style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 6px; -fx-cursor: hand;"/>
+
+                        <Button text="Retour à la connexion"
+                                onAction="#handleBackToLogin"
+                                prefWidth="180"
+                                prefHeight="40"
+                                style="-fx-background-color: #6B7280; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 6px; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
