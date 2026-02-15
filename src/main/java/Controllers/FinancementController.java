@@ -1,9 +1,7 @@
 package Controllers;
 
-import Models.Financement;
-import Models.OffreFinancement;
-import Services.FinancementService;
-import Services.OffreFinancementService;
+import Models.FinancementOffre;
+import Services.FinancementOffreService;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,19 +11,17 @@ import javafx.scene.control.*;
 
 public class FinancementController {
 
-    @FXML private TableView<Financement> tableFinancement;
-    @FXML private TableColumn<Financement, Integer> colFinId;
-    @FXML private TableColumn<Financement, Integer> colFinProjetId;
-    @FXML private TableColumn<Financement, Integer> colFinBanqueId;
-    @FXML private TableColumn<Financement, Double> colFinMontant;
-    @FXML private TableColumn<Financement, String> colFinDate;
+    @FXML private TableView<FinancementOffre> tableFusion;
+    @FXML private TableColumn<FinancementOffre, Integer> colFinId;
+    @FXML private TableColumn<FinancementOffre, Integer> colFinProjetId;
+    @FXML private TableColumn<FinancementOffre, Integer> colFinBanqueId;
+    @FXML private TableColumn<FinancementOffre, Double> colFinMontant;
+    @FXML private TableColumn<FinancementOffre, String> colFinDate;
 
-    @FXML private TableView<OffreFinancement> tableOffres;
-    @FXML private TableColumn<OffreFinancement, Integer> colOffreId;
-    @FXML private TableColumn<OffreFinancement, String> colOffreType;
-    @FXML private TableColumn<OffreFinancement, Double> colOffreTaux;
-    @FXML private TableColumn<OffreFinancement, Integer> colOffreDuree;
-    @FXML private TableColumn<OffreFinancement, Integer> colOffreFinancementId;
+    @FXML private TableColumn<FinancementOffre, Integer> colOffreId;
+    @FXML private TableColumn<FinancementOffre, String> colOffreType;
+    @FXML private TableColumn<FinancementOffre, Double> colOffreTaux;
+    @FXML private TableColumn<FinancementOffre, Integer> colOffreDuree;
 
     @FXML private Button btnRefresh;
     @FXML private Button btnAddFinancement;
@@ -40,130 +36,131 @@ public class FinancementController {
     @FXML private TextField txtTypeOffre;
     @FXML private TextField txtTaux;
     @FXML private TextField txtDuree;
-    @FXML private TextField txtOffreFinancementId;
 
-    private final FinancementService financementService = new FinancementService();
-    private final OffreFinancementService offreService = new OffreFinancementService();
+    private final FinancementOffreService fusionService = new FinancementOffreService();
 
-    @FXML private void initialize() {
-        colFinId.setCellValueFactory(cd -> new SimpleIntegerProperty(cd.getValue().getId()).asObject());
-        colFinProjetId.setCellValueFactory(cd -> new SimpleIntegerProperty(cd.getValue().getProjetId()).asObject());
-        colFinBanqueId.setCellValueFactory(cd -> new SimpleIntegerProperty(cd.getValue().getBanqueId()).asObject());
-        colFinMontant.setCellValueFactory(cd -> new SimpleDoubleProperty(cd.getValue().getMontant()).asObject());
-        colFinDate.setCellValueFactory(cd -> new SimpleStringProperty(String.valueOf(cd.getValue().getDateFinancement())));
+    @FXML
+    private void initialize() {
+        colFinId.setCellValueFactory(cd -> new SimpleIntegerProperty(nullSafeInt(cd.getValue().getFinancementId())).asObject());
+        colFinProjetId.setCellValueFactory(cd -> new SimpleIntegerProperty(nullSafeInt(cd.getValue().getProjetId())).asObject());
+        colFinBanqueId.setCellValueFactory(cd -> new SimpleIntegerProperty(nullSafeInt(cd.getValue().getBanqueId())).asObject());
+        colFinMontant.setCellValueFactory(cd -> new SimpleDoubleProperty(nullSafeDouble(cd.getValue().getMontant())).asObject());
+        colFinDate.setCellValueFactory(cd -> new SimpleStringProperty(nullSafeString(cd.getValue().getDateFinancement())));
 
-        colOffreId.setCellValueFactory(cd -> new SimpleIntegerProperty(cd.getValue().getIdOffre()).asObject());
-        colOffreType.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().getTypeOffre()));
-        colOffreTaux.setCellValueFactory(cd -> new SimpleDoubleProperty(cd.getValue().getTaux()).asObject());
-        colOffreDuree.setCellValueFactory(cd -> new SimpleIntegerProperty(cd.getValue().getDuree()).asObject());
-        colOffreFinancementId.setCellValueFactory(cd -> new SimpleIntegerProperty(cd.getValue().getIdFinancement()).asObject());
+        colOffreId.setCellValueFactory(cd -> new SimpleIntegerProperty(nullSafeInt(cd.getValue().getOffreId())).asObject());
+        colOffreType.setCellValueFactory(cd -> new SimpleStringProperty(nullSafeString(cd.getValue().getTypeOffre())));
+        colOffreTaux.setCellValueFactory(cd -> new SimpleDoubleProperty(nullSafeDouble(cd.getValue().getTaux())).asObject());
+        colOffreDuree.setCellValueFactory(cd -> new SimpleIntegerProperty(nullSafeInt(cd.getValue().getDuree())).asObject());
 
-        loadFinancements();
-        loadOffres();
+        loadAll();
 
-        tableFinancement.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+        tableFusion.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
             if (n != null) {
-                txtProjetId.setText(String.valueOf(n.getProjetId()));
-                txtBanqueId.setText(String.valueOf(n.getBanqueId()));
-                txtMontant.setText(String.valueOf(n.getMontant()));
-                txtDateFinancement.setText(String.valueOf(n.getDateFinancement()));
-            }
-        });
+                txtProjetId.setText(String.valueOf(nullSafeInt(n.getProjetId())));
+                txtBanqueId.setText(String.valueOf(nullSafeInt(n.getBanqueId())));
+                txtMontant.setText(String.valueOf(nullSafeDouble(n.getMontant())));
+                txtDateFinancement.setText(nullSafeString(n.getDateFinancement()));
 
-        tableOffres.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
-            if (n != null) {
-                txtTypeOffre.setText(n.getTypeOffre());
-                txtTaux.setText(String.valueOf(n.getTaux()));
-                txtDuree.setText(String.valueOf(n.getDuree()));
-                txtOffreFinancementId.setText(String.valueOf(n.getIdFinancement()));
+                txtTypeOffre.setText(nullSafeString(n.getTypeOffre()));
+                txtTaux.setText(String.valueOf(nullSafeDouble(n.getTaux())));
+                txtDuree.setText(String.valueOf(nullSafeInt(n.getDuree())));
             }
         });
     }
 
-    @FXML private void ajouterFinancement() {
-        Financement f = new Financement();
-        f.setProjetId(Integer.parseInt(txtProjetId.getText()));
-        f.setBanqueId(Integer.parseInt(txtBanqueId.getText()));
-        f.setMontant(Double.parseDouble(txtMontant.getText()));
-        f.setDateFinancement(txtDateFinancement.getText());
-        financementService.add(f);
-        loadFinancements();
-        clearFinFields();
+    @FXML
+    private void ajouterFinancement() {
+        try {
+            FinancementOffre data = buildFromForm(null);
+            fusionService.add(data);
+            loadAll();
+            clearFields();
+        } catch (NumberFormatException ex) {
+            showError("Valeurs invalides", "Veuillez verifier les champs numeriques.");
+        }
     }
 
-    @FXML private void modifierFinancement() {
-        Financement selected = tableFinancement.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-        selected.setProjetId(Integer.parseInt(txtProjetId.getText()));
-        selected.setBanqueId(Integer.parseInt(txtBanqueId.getText()));
-        selected.setMontant(Double.parseDouble(txtMontant.getText()));
-        selected.setDateFinancement(txtDateFinancement.getText());
-        financementService.update(selected);
-        loadFinancements();
+    @FXML
+    private void modifierFinancement() {
+        FinancementOffre selected = tableFusion.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selection requise", "Choisissez une ligne a modifier.");
+            return;
+        }
+        try {
+            FinancementOffre data = buildFromForm(selected);
+            fusionService.update(data);
+            loadAll();
+        } catch (NumberFormatException ex) {
+            showError("Valeurs invalides", "Veuillez verifier les champs numeriques.");
+        }
     }
 
-    @FXML private void supprimerFinancement() {
-        Financement selected = tableFinancement.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-        financementService.delete(selected.getId());
-        loadFinancements();
-        clearFinFields();
+    @FXML
+    private void supprimerFinancement() {
+        FinancementOffre selected = tableFusion.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selection requise", "Choisissez une ligne a supprimer.");
+            return;
+        }
+        fusionService.delete(selected);
+        loadAll();
+        clearFields();
     }
 
-    @FXML private void refreshAll() {
-        loadFinancements();
-        loadOffres();
+    @FXML
+    private void refreshAll() {
+        loadAll();
     }
 
-    @FXML private void ajouterOffre() {
-        OffreFinancement o = new OffreFinancement();
-        o.setTypeOffre(txtTypeOffre.getText());
-        o.setTaux(Double.parseDouble(txtTaux.getText()));
-        o.setDuree(Integer.parseInt(txtDuree.getText()));
-        o.setIdFinancement(Integer.parseInt(txtOffreFinancementId.getText()));
-        offreService.add(o);
-        loadOffres();
-        clearOffreFields();
+    private FinancementOffre buildFromForm(FinancementOffre selected) {
+        FinancementOffre data = new FinancementOffre();
+        if (selected != null) {
+            data.setFinancementId(selected.getFinancementId());
+            data.setOffreId(selected.getOffreId());
+        }
+        data.setProjetId(Integer.parseInt(txtProjetId.getText()));
+        data.setBanqueId(Integer.parseInt(txtBanqueId.getText()));
+        data.setMontant(Double.parseDouble(txtMontant.getText()));
+        data.setDateFinancement(txtDateFinancement.getText());
+
+        data.setTypeOffre(txtTypeOffre.getText());
+        data.setTaux(Double.parseDouble(txtTaux.getText()));
+        data.setDuree(Integer.parseInt(txtDuree.getText()));
+        return data;
     }
 
-    @FXML private void modifierOffre() {
-        OffreFinancement selected = tableOffres.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-        selected.setTypeOffre(txtTypeOffre.getText());
-        selected.setTaux(Double.parseDouble(txtTaux.getText()));
-        selected.setDuree(Integer.parseInt(txtDuree.getText()));
-        selected.setIdFinancement(Integer.parseInt(txtOffreFinancementId.getText()));
-        offreService.update(selected);
-        loadOffres();
+    private void loadAll() {
+        tableFusion.setItems(FXCollections.observableArrayList(fusionService.getAll()));
     }
 
-    @FXML private void supprimerOffre() {
-        OffreFinancement selected = tableOffres.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-        offreService.delete(selected.getIdOffre());
-        loadOffres();
-        clearOffreFields();
-    }
-
-    private void loadFinancements() {
-        tableFinancement.setItems(FXCollections.observableArrayList(financementService.getAll()));
-    }
-
-    private void loadOffres() {
-        tableOffres.setItems(FXCollections.observableArrayList(offreService.getAll()));
-    }
-
-    private void clearFinFields() {
+    private void clearFields() {
         txtProjetId.clear();
         txtBanqueId.clear();
         txtMontant.clear();
         txtDateFinancement.clear();
-    }
-
-    private void clearOffreFields() {
         txtTypeOffre.clear();
         txtTaux.clear();
         txtDuree.clear();
-        txtOffreFinancementId.clear();
+    }
+
+    private int nullSafeInt(Integer value) {
+        return value == null ? 0 : value;
+    }
+
+    private double nullSafeDouble(Double value) {
+        return value == null ? 0.0 : value;
+    }
+
+    private String nullSafeString(String value) {
+        return value == null ? "" : value;
+    }
+
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
