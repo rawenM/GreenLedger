@@ -6,8 +6,8 @@
 
 <HBox xmlns="http://javafx.com/javafx/20.0.2"
       xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="Controllers.ExpertProjetController"
-    spacing="0" styleClass="app-container">
+      fx:controller="Controllers.ExpertProjetController"
+      spacing="0" styleClass="app-container">
 
     <!-- LEFT SIDEBAR -->
     <VBox prefWidth="220" styleClass="sidebar" style="-fx-min-width: 220; -fx-max-width: 220;">
@@ -27,9 +27,9 @@
 
         <!-- Navigation Section -->
         <Label text="NAVIGATION" styleClass="section-title-sidebar"/>
-        <Button fx:id="btnGestionProjets" text="📁 Gestion Projets" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
+        <Button fx:id="btnGestionProjets" text="📁 Voir Projets" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
         <Button fx:id="btnGestionEvaluations" text="📋 Évaluations" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
-        
+
         <Separator styleClass="sidebar-sep" style="-fx-padding: 4 0;"/>
 
         <!-- System Section -->
@@ -37,6 +37,12 @@
         <Button fx:id="btnSettings" text="⚙ Settings" styleClass="nav-btn" style="-fx-padding: 10 12;"/>
 
         <Region VBox.vgrow="ALWAYS"/>
+
+        <VBox spacing="2" alignment="TOP_LEFT" style="-fx-padding: 10 0 0 0;">
+            <Label fx:id="lblProfileName" styleClass="page-title"/>
+            <Label fx:id="lblProfileType" styleClass="page-subtitle"/>
+            <Button text="✏️ Modifier profil" styleClass="btn-secondary" onAction="#handleEditProfile"/>
+        </VBox>
     </VBox>
 
     <!-- MAIN CONTENT -->

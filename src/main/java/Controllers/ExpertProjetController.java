@@ -12,8 +12,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 import Models.Projet;
-import Services.ProjetService;
 import org.GreenLedger.MainFX;
+import Services.ProjetService;
+
 
 import java.io.IOException;
 
@@ -64,12 +65,17 @@ public class ExpertProjetController extends BaseController {
     @FXML
     private Label lblEvaluated;
 
+    @FXML private Label lblProfileName;
+    @FXML private Label lblProfileType;
+
     private final ObservableList<Projet> data = FXCollections.observableArrayList();
     private final ProjetService projetService = new ProjetService();
 
     @FXML
     public void initialize() {
         super.initialize();
+
+        applyProfile(lblProfileName, lblProfileType);
 
         setActiveNav(btnGestionProjets);
 
@@ -92,9 +98,11 @@ public class ExpertProjetController extends BaseController {
                         ? "En attente"
                         : cellData.getValue().getStatutEvaluation()
         ));
-        colScore.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().getScoreEsg() <= 0 ? "Pending" : String.valueOf(cellData.getValue().getScoreEsg())
-        ));
+        colScore.setCellValueFactory(cellData -> {
+            Integer score = cellData.getValue().getScoreEsg();
+            String label = (score == null || score <= 0) ? "Pending" : String.valueOf(score);
+            return new SimpleStringProperty(label);
+        });
         colAction.setCellFactory(createActionCell());
         colIcon.setCellFactory(column -> new TableCell<>() {
             private final Label icon = new Label(">>");
@@ -180,7 +188,15 @@ public class ExpertProjetController extends BaseController {
     }
 
     private void refreshTable() {
-        data.setAll(projetService.afficher());
+        java.util.List<Projet> projets = projetService.afficher();
+        java.util.List<Projet> submitted = new java.util.ArrayList<>();
+        for (Projet projet : projets) {
+            String statut = projet.getStatut();
+            if (statut != null && statut.equalsIgnoreCase("SUBMITTED")) {
+                submitted.add(projet);
+            }
+        }
+        data.setAll(submitted);
         updateStats();
     }
 
@@ -195,5 +211,14 @@ public class ExpertProjetController extends BaseController {
         lblTotal.setText(String.valueOf(total));
         lblPending.setText(String.valueOf(pending));
         lblEvaluated.setText(String.valueOf(evaluated));
+    }
+
+    @FXML
+    private void handleEditProfile() {
+        try {
+            MainFX.setRoot("editProfile");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
