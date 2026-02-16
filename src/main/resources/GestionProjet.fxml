@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx/20.0.2"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.ProjetController"
+      spacing="0" styleClass="page">
+
+    <!-- Sidebar -->
+    <VBox prefWidth="220" styleClass="sidebar">
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <Label text="🌿" style="-fx-font-size: 20px;"/>
+            <Label text="GreenLedger" styleClass="sidebar-title"/>
+        </HBox>
+
+        <Separator styleClass="sidebar-sep"/>
+
+        <Button text="📁 Gestion Projets" styleClass="nav-btn" onAction="#onGestionProjets"/>
+        <Button fx:id="btnGreenWallet" text="💳 GreenWallet" styleClass="nav-btn" onAction="#onGreenWallet"/>
+        <Button fx:id="btnSettings" text="⚙ Settings" styleClass="nav-btn" style="-fx-padding: 10 12;" onAction="#onSettings"/>
+
+        <Region VBox.vgrow="ALWAYS"/>
+        <Label text="Module Projet" style="-fx-opacity: 0.6; -fx-font-size: 11px;"/>
+
+        <VBox spacing="2" alignment="TOP_LEFT" style="-fx-padding: 10 0 0 0;">
+            <Label fx:id="lblProfileName" styleClass="page-title"/>
+            <Label fx:id="lblProfileType" styleClass="page-subtitle"/>
+            <Button text="✏️ Modifier profil" styleClass="btn-secondary" onAction="#handleEditProfile"/>
+        </VBox>
+    </VBox>
+
+    <!-- Content -->
+    <VBox spacing="0" HBox.hgrow="ALWAYS" styleClass="content-area">
+
+        <!-- Header + Stats -->
+        <VBox spacing="14">
+            <padding>
+                <Insets top="12" right="32" bottom="12" left="32"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="📁" style="-fx-font-size: 18px;"/>
+                <Label text="Gestion des Projets" styleClass="page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="⟳ Rafraîchir" onAction="#onRefresh" styleClass="btn-secondary"/>
+                <Button text="+ Nouveau" onAction="#onNew" styleClass="btn-primary"/>
+            </HBox>
+
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="TOTAL PROJETS" styleClass="stat-title"/>
+                    <Label fx:id="lblTotal" text="0" styleClass="stat-value accent-blue"/>
+                    <Label text="📦" style="-fx-font-size: 18px;"/>
+                </VBox>
+
+                <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="DRAFT" styleClass="stat-title"/>
+                    <Label fx:id="lblDraft" text="0" styleClass="stat-value accent-amber"/>
+                    <Label text="📝" style="-fx-font-size: 18px;"/>
+                </VBox>
+
+                <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="SOUMIS" styleClass="stat-title"/>
+                    <Label fx:id="lblLocked" text="0" styleClass="stat-value accent-green"/>
+                    <Label text="🔒" style="-fx-font-size: 18px;"/>
+                </VBox>
+
+                <VBox spacing="6" styleClass="stat-card" HBox.hgrow="ALWAYS"
+                      onMouseClicked="#onGreenWallet" style="-fx-cursor: hand;">
+                    <Label text="GREEN CARBON DISPONIBLE" styleClass="stat-title"/>
+                    <Label fx:id="lblWalletAvailable" text="0.00 tCO₂" styleClass="stat-value accent-blue"/>
+                    <Label text="💳" style="-fx-font-size: 18px;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- Table only -->
+        <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS"
+                    style="-fx-background-color: transparent; -fx-background: transparent;">
+            <VBox spacing="18">
+                <padding>
+                    <Insets top="8" right="32" bottom="32" left="32"/>
+                </padding>
+
+                <VBox spacing="12" styleClass="card">
+                    <padding>
+                        <Insets top="18" right="18" bottom="18" left="18"/>
+                    </padding>
+
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="📋" style="-fx-font-size: 18px;"/>
+                        <Label text="Liste des projets" styleClass="page-title"/>
+                    </HBox>
+
+                    <TableView fx:id="table" prefHeight="520"
+                               VBox.vgrow="ALWAYS"
+                               styleClass="table-card table-projects">
+                        <placeholder>
+                            <Label text="Aucun projet" styleClass="placeholder-label"/>
+                        </placeholder>
+                        <columns>
+                            <TableColumn fx:id="colId" text="ID" prefWidth="70" styleClass="col-center"/>
+                            <TableColumn fx:id="colTitre" text="Titre" prefWidth="320" styleClass="col-left"/>
+                            <TableColumn fx:id="colStatut" text="Statut" prefWidth="160" styleClass="col-center"/>
+                            <TableColumn fx:id="colBudget" text="Budget" prefWidth="160" styleClass="col-center"/>
+                            <TableColumn fx:id="colEvaluation" text="Evaluation" prefWidth="160" styleClass="col-center"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </VBox>
+</HBox>
