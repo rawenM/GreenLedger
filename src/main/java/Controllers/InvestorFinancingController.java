@@ -4,6 +4,7 @@ import Models.Financement;
 import Models.OffreFinancement;
 import Models.Projet;
 import Models.User;
+import Models.TypeUtilisateur;
 import Services.FinancementService;
 import Services.OffreFinancementService;
 import Services.ProjetService;
@@ -30,6 +31,15 @@ public class InvestorFinancingController extends BaseController {
     @FXML private Label lblTotalInvestments;
     @FXML private Label lblTotalAmount;
     @FXML private Label lblProjectsFollowed;
+    @FXML private Label lblSidebarTitle;
+    @FXML private Label lblPageTitle;
+    @FXML private Label lblProfileName;
+    @FXML private Label lblProfileType;
+
+    @FXML private Button btnNavDashboard;
+    @FXML private Button btnNavInvestments;
+    @FXML private Button btnNavFinancement;
+    @FXML private Button btnNavSettings;
 
     // My Investments Table
     @FXML private TableView<Financement> tableMyInvestments;
@@ -72,6 +82,8 @@ public class InvestorFinancingController extends BaseController {
                 return;
             }
 
+            configureNavigationForRole();
+            applyProfile(lblProfileName, lblProfileType);
             setupTableColumns();
             loadData();
             setupComboBox();
@@ -80,6 +92,82 @@ public class InvestorFinancingController extends BaseController {
             System.err.println("[ERROR] Initialization error: " + ex.getMessage());
             ex.printStackTrace();
             showError("Erreur d'initialisation", ex.getMessage());
+        }
+    }
+
+    private void configureNavigationForRole() {
+        TypeUtilisateur type = currentUser.getTypeUtilisateur();
+        if (type == null) {
+            return;
+        }
+
+        switch (type) {
+            case ADMIN:
+                applyNavLabels("GreenLedger Admin", "👑 Administration");
+                configureNavButton(btnNavDashboard, "👑 Utilisateurs", () -> navigate("fxml/admin_users"));
+                hideNavButton(btnNavInvestments);
+                hideNavButton(btnNavFinancement);
+                configureNavButton(btnNavSettings, "⚙️ Paramètres", () -> navigate("settings"));
+                break;
+            case EXPERT_CARBONE:
+                applyNavLabels("GreenLedger Expert", "🧪 Espace Expert Carbone");
+                configureNavButton(btnNavDashboard, "📁 Voir projets", () -> navigate("expertProjet"));
+                configureNavButton(btnNavInvestments, "🧾 Evaluations carbone", () -> navigate("gestionCarbone"));
+                hideNavButton(btnNavFinancement);
+                configureNavButton(btnNavSettings, "⚙️ Paramètres", () -> navigate("settings"));
+                break;
+            case PORTEUR_PROJET:
+                applyNavLabels("GreenLedger Projet", "📁 Gestion des projets");
+                configureNavButton(btnNavDashboard, "📁 Mes projets", () -> navigate("GestionProjet"));
+                configureNavButton(btnNavInvestments, "📊 Mes evaluations", () -> navigate("ownerEvaluations"));
+                hideNavButton(btnNavFinancement);
+                configureNavButton(btnNavSettings, "⚙️ Paramètres", () -> navigate("settings"));
+                break;
+            case INVESTISSEUR:
+            default:
+                applyNavLabels("GreenLedger Investisseur", "💰 Gestion des investissements");
+                configureNavButton(btnNavDashboard, "📊 Tableau de bord", () -> navigate("fxml/dashboard"));
+                configureNavButton(btnNavInvestments, "💰 Investissements", this::handleGoInvestments);
+                configureNavButton(btnNavFinancement, "💳 Financement avancé", () -> navigate("financement"));
+                configureNavButton(btnNavSettings, "⚙️ Paramètres", () -> navigate("settings"));
+                break;
+        }
+    }
+
+    private void applyNavLabels(String sidebarTitle, String pageTitle) {
+        if (lblSidebarTitle != null) {
+            lblSidebarTitle.setText(sidebarTitle);
+        }
+        if (lblPageTitle != null) {
+            lblPageTitle.setText(pageTitle);
+        }
+    }
+
+    private void configureNavButton(Button button, String text, Runnable action) {
+        if (button == null) {
+            return;
+        }
+        button.setText(text);
+        button.setOnAction(event -> action.run());
+        button.setVisible(true);
+        button.setManaged(true);
+    }
+
+    private void hideNavButton(Button button) {
+        if (button == null) {
+            return;
+        }
+        button.setVisible(false);
+        button.setManaged(false);
+    }
+
+    private void navigate(String fxml) {
+        try {
+            org.GreenLedger.MainFX.setRoot(fxml);
+        } catch (IOException ex) {
+            System.err.println("[ERROR] Navigation error: " + ex.getMessage());
+            ex.printStackTrace();
+            showError("Erreur", "Impossible de naviguer vers " + fxml);
         }
     }
 
@@ -302,8 +390,16 @@ public class InvestorFinancingController extends BaseController {
     @FXML
     private void handleBack() {
         try {
-            // Return to dashboard
-            org.GreenLedger.MainFX.setRoot("fxml/dashboard");
+            TypeUtilisateur type = currentUser != null ? currentUser.getTypeUtilisateur() : null;
+            if (type == TypeUtilisateur.EXPERT_CARBONE) {
+                org.GreenLedger.MainFX.setRoot("expertProjet");
+            } else if (type == TypeUtilisateur.PORTEUR_PROJET) {
+                org.GreenLedger.MainFX.setRoot("GestionProjet");
+            } else if (type == TypeUtilisateur.ADMIN) {
+                org.GreenLedger.MainFX.setRoot("fxml/admin_users");
+            } else {
+                org.GreenLedger.MainFX.setRoot("fxml/dashboard");
+            }
         } catch (IOException ex) {
             System.err.println("[ERROR] Navigation error: " + ex.getMessage());
             ex.printStackTrace();
@@ -316,12 +412,15 @@ public class InvestorFinancingController extends BaseController {
      */
     @FXML
     private void handleGoDashboard() {
-        try {
-            org.GreenLedger.MainFX.setRoot("fxml/dashboard");
-        } catch (IOException ex) {
-            System.err.println("[ERROR] Navigation error: " + ex.getMessage());
-            ex.printStackTrace();
-            showError("Erreur", "Impossible de naviguer au tableau de bord");
+        TypeUtilisateur type = currentUser != null ? currentUser.getTypeUtilisateur() : null;
+        if (type == TypeUtilisateur.EXPERT_CARBONE) {
+            navigate("expertProjet");
+        } else if (type == TypeUtilisateur.PORTEUR_PROJET) {
+            navigate("GestionProjet");
+        } else if (type == TypeUtilisateur.ADMIN) {
+            navigate("fxml/admin_users");
+        } else {
+            navigate("fxml/dashboard");
         }
     }
 
@@ -330,6 +429,19 @@ public class InvestorFinancingController extends BaseController {
      */
     @FXML
     private void handleGoInvestments() {
+        TypeUtilisateur type = currentUser != null ? currentUser.getTypeUtilisateur() : null;
+        if (type == TypeUtilisateur.EXPERT_CARBONE) {
+            navigate("gestionCarbone");
+            return;
+        }
+        if (type == TypeUtilisateur.PORTEUR_PROJET) {
+            navigate("ownerEvaluations");
+            return;
+        }
+        if (type == TypeUtilisateur.ADMIN) {
+            navigate("fxml/admin_users");
+            return;
+        }
         try {
             refreshInvestments();
             refreshOffers();
@@ -344,30 +456,30 @@ public class InvestorFinancingController extends BaseController {
      */
     @FXML
     private void handleGoFinancement() {
-        try {
-            org.GreenLedger.MainFX.setRoot("financement");
-        } catch (IOException ex) {
-            System.err.println("[ERROR] Navigation error: " + ex.getMessage());
-            ex.printStackTrace();
-            showError("Erreur", "Impossible de naviguer au module financement");
+        TypeUtilisateur type = currentUser != null ? currentUser.getTypeUtilisateur() : null;
+        if (type == TypeUtilisateur.EXPERT_CARBONE) {
+            navigate("gestionCarbone");
+            return;
         }
+        if (type == TypeUtilisateur.PORTEUR_PROJET) {
+            navigate("GestionProjet");
+            return;
+        }
+        if (type == TypeUtilisateur.ADMIN) {
+            navigate("fxml/admin_users");
+            return;
+        }
+        navigate("financement");
     }
 
-    /**
-     * Navigate to settings (use dashboard with settings context or dedicated settings view)
-     */
     @FXML
     private void handleGoSettings() {
-        try {
-            // Navigate to settings - using dashboard as fallback
-            // In a full implementation, this would navigate to a dedicated settings view
-            org.GreenLedger.MainFX.setRoot("fxml/dashboard");
-            showAlert("Paramètres", "Redirection vers les paramètres du tableau de bord", Alert.AlertType.INFORMATION);
-        } catch (IOException ex) {
-            System.err.println("[ERROR] Navigation error: " + ex.getMessage());
-            ex.printStackTrace();
-            showError("Erreur", "Impossible de naviguer aux paramètres");
-        }
+        navigate("settings");
+    }
+
+    @FXML
+    private void handleEditProfile() {
+        navigate("editProfile");
     }
 
     /**

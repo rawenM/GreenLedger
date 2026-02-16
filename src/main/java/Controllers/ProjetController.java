@@ -166,6 +166,15 @@ public class ProjetController {
         }
     }
 
+    @FXML
+    private void onBack() {
+        try {
+            MainFX.setRoot("fxml/dashboard");
+        } catch (Exception ex) {
+            showError("Navigation impossible: " + ex.getMessage());
+        }
+    }
+
     private void refresh() {
         data.setAll(service.afficher());
         evaluatedProjectIds = evaluationService.getProjetIdsWithEvaluations();

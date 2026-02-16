@@ -991,6 +991,15 @@ public class GreenWalletController extends BaseController {
         }
     }
 
+    @FXML
+    private void onBack() {
+        try {
+            MainFX.setRoot("fxml/dashboard");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // ==================== UTILITY METHODS ====================
 
     private String formatCredits(double credits) {

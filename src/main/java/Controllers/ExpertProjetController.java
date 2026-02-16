@@ -14,6 +14,9 @@ import javafx.util.Callback;
 import Models.Projet;
 import org.GreenLedger.MainFX;
 import Services.ProjetService;
+import Utils.SessionManager;
+import Models.TypeUtilisateur;
+import Models.User;
 
 
 import java.io.IOException;
@@ -220,5 +223,18 @@ public class ExpertProjetController extends BaseController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void handleBack() {
+        try {
+            MainFX.setRoot(resolveBackTarget());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String resolveBackTarget() {
+        return "fxml/dashboard";
     }
 }
