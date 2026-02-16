@@ -17,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.GreenLedger.MainFX;
+import Utils.SessionManager;
 
 import java.util.List;
 
@@ -176,20 +177,48 @@ public class ProjetController {
     }
 
     private void refresh() {
-        data.setAll(service.afficher());
-        evaluatedProjectIds = evaluationService.getProjetIdsWithEvaluations();
+        User user = SessionManager.getInstance().getCurrentUser();
+        Integer entrepriseId = (user != null && user.getId() != null) ? Math.toIntExact(user.getId()) : null;
+        List<Projet> projets = (entrepriseId != null)
+                ? service.getByEntreprise(entrepriseId)
+                : service.afficher();
+        if ((projets == null || projets.isEmpty()) && entrepriseId != null) {
+            projets = service.afficher();
+        }
+        if (projets == null) {
+            projets = java.util.Collections.emptyList();
+        }
+        data.setAll(projets);
+        evaluatedProjectIds = getEvaluatedProjectIds(projets);
         updateStats();
         refreshWalletBalance();
+    }
+
+    private java.util.Set<Integer> getEvaluatedProjectIds(List<Projet> projets) {
+        java.util.Set<Integer> evaluatedIds = evaluationService.getProjetIdsWithEvaluations();
+        if (evaluatedIds == null || evaluatedIds.isEmpty()) {
+            return java.util.Collections.emptySet();
+        }
+        if (projets == null || projets.isEmpty()) {
+            return evaluatedIds;
+        }
+        java.util.Set<Integer> visibleIds = new java.util.HashSet<>();
+        for (Projet projet : projets) {
+            visibleIds.add(projet.getId());
+        }
+        evaluatedIds.retainAll(visibleIds);
+        return evaluatedIds;
     }
 
     private void updateStats() {
         int total = data.size();
         long drafts = data.stream().filter(p -> "DRAFT".equalsIgnoreCase(p.getStatut())).count();
-        long locked = total - drafts;
+        long submitted = data.stream().filter(p -> "SUBMITTED".equalsIgnoreCase(p.getStatut())).count();
+        long evaluated = data.stream().filter(p -> evaluatedProjectIds.contains(p.getId())).count();
 
         lblTotal.setText(String.valueOf(total));
         lblDraft.setText(String.valueOf(drafts));
-        lblLocked.setText(String.valueOf(locked));
+        lblLocked.setText(String.valueOf(submitted));
     }
 
     private void refreshWalletBalance() {

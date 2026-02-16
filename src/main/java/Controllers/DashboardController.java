@@ -14,6 +14,8 @@ import Models.User;
 import Services.IUserService;
 import Services.UserServiceImpl;
 import Services.EvaluationService;
+import Services.ProjetService;
+import Services.CritereImpactService;
 import Models.Evaluation;
 import Utils.SessionManager;
 import org.GreenLedger.MainFX;
@@ -63,6 +65,8 @@ public class DashboardController {
 
     private final IUserService userService = new UserServiceImpl();
     private final EvaluationService evaluationService = new EvaluationService();
+    private final ProjetService projetService = new ProjetService();
+    private final CritereImpactService critereImpactService = new CritereImpactService();
     private User currentUser;
 
     private static final DateTimeFormatter DATE_FORMATTER =
@@ -272,14 +276,18 @@ public class DashboardController {
      */
     private void loadInvestorStatistics() {
         try {
-            stat1Label.setText("Investissements");
-            stat1Value.setText("0"); // TODO: Recuperer du module de financement
+            java.util.List<Models.Projet> projets = projetService.afficher();
+            int evaluationCount = evaluationService.afficher().size();
+            long submitted = projets.stream().filter(p -> "SUBMITTED".equalsIgnoreCase(p.getStatut())).count();
 
-            stat2Label.setText("Montant Total");
-            stat2Value.setText("0 EUR"); // TODO: Recuperer du module de financement
+            stat1Label.setText("Projets disponibles");
+            stat1Value.setText(String.valueOf(projets.size()));
 
-            stat3Label.setText("Projets Suivis");
-            stat3Value.setText("0"); // TODO: Recuperer du module de projets
+            stat2Label.setText("Evaluations totales");
+            stat2Value.setText(String.valueOf(evaluationCount));
+
+            stat3Label.setText("Projets soumis");
+            stat3Value.setText(String.valueOf(submitted));
         } catch (Exception ex) {
             System.err.println("[CLEAN] Erreur lors du chargement des stats investisseur: " + ex.getMessage());
             stat1Value.setText("--");
@@ -293,14 +301,24 @@ public class DashboardController {
      */
     private void loadProjectOwnerStatistics() {
         try {
-            stat1Label.setText("Projets Crees");
-            stat1Value.setText("0"); // TODO: Recuperer du module de projets
+            java.util.List<Models.Projet> projets = projetService.afficher();
+            java.util.List<Evaluation> evaluations = evaluationService.afficher();
 
-            stat2Label.setText("Fonds Collectes");
-            stat2Value.setText("0 EUR"); // TODO: Recuperer du module de financement
+            java.util.Set<Integer> evalProjetIds = new java.util.HashSet<>();
+            for (Evaluation evaluation : evaluations) {
+                evalProjetIds.add(evaluation.getIdProjet());
+            }
 
-            stat3Label.setText("Investisseurs");
-            stat3Value.setText("0"); // TODO: Recuperer du module de financement
+            long evaluated = projets.stream().filter(p -> evalProjetIds.contains(p.getId())).count();
+
+            stat1Label.setText("Projets deposes");
+            stat1Value.setText(String.valueOf(projets.size()));
+
+            stat2Label.setText("Projets evalues");
+            stat2Value.setText(String.valueOf(evaluated));
+
+            stat3Label.setText("Evaluations");
+            stat3Value.setText(String.valueOf(evaluations.size()));
         } catch (Exception ex) {
             System.err.println("[CLEAN] Erreur lors du chargement des stats porteur: " + ex.getMessage());
             stat1Value.setText("--");
@@ -358,16 +376,23 @@ public class DashboardController {
 
     private void loadExpertStatistics() {
         try {
+            java.util.List<Models.Projet> projets = projetService.afficher();
+            long submitted = projets.stream().filter(p -> "SUBMITTED".equalsIgnoreCase(p.getStatut())).count();
+            int evaluationCount = evaluationService.afficher().size();
+
             stat1Label.setText("Projets a evaluer");
-            stat1Value.setText("0");
+            stat1Value.setText(String.valueOf(submitted));
 
-            stat2Label.setText("Evaluations completees");
-            stat2Value.setText("0");
+            stat2Label.setText("Evaluations");
+            stat2Value.setText(String.valueOf(evaluationCount));
 
-            stat3Label.setText("Taux de conformite");
-            stat3Value.setText("0%");
+            stat3Label.setText("Criteres d'impact");
+            stat3Value.setText(String.valueOf(critereImpactService.afficherReferences().size()));
         } catch (Exception ex) {
             System.err.println("[CLEAN] Erreur stats expert: " + ex.getMessage());
+            stat1Value.setText("--");
+            stat2Value.setText("--");
+            stat3Value.setText("--");
         }
     }
 

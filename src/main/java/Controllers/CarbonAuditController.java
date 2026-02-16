@@ -330,11 +330,16 @@ public class CarbonAuditController extends BaseController {
         if (lblProjetsAudit == null || lblProjetsEvalues == null) {
             return;
         }
-        long pending = projets.stream().filter(p -> {
-            String s = p.getStatutEvaluation();
-            return s == null || s.isEmpty() || s.equalsIgnoreCase("En attente");
-        }).count();
-        long evaluated = projets.size() - pending;
+        java.util.Set<Integer> evaluatedIds = new java.util.HashSet<>();
+        java.util.List<Evaluation> evaluations = evaluationService.afficher();
+        if (evaluations != null) {
+            for (Evaluation evaluation : evaluations) {
+                evaluatedIds.add(evaluation.getIdProjet());
+            }
+        }
+        long submitted = projets.stream().filter(p -> "SUBMITTED".equalsIgnoreCase(p.getStatut())).count();
+        long evaluated = projets.stream().filter(p -> evaluatedIds.contains(p.getId())).count();
+        long pending = Math.max(0, submitted - evaluated);
         lblProjetsAudit.setText(String.valueOf(pending));
         lblProjetsEvalues.setText(String.valueOf(evaluated));
     }
