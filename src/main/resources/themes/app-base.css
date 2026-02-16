@@ -91,6 +91,12 @@
     -fx-font-weight: 600;
 }
 
+.nav-btn-active {
+    -fx-background-color: #2D5F3F;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: 600;
+}
+
 /* Section Titles in Sidebar */
 .section-title-sidebar {
     -fx-font-size: 10px;
