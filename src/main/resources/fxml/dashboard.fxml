@@ -104,9 +104,10 @@
 
             <Separator/>
 
-            <Text text="Module Gestion Utilisateurs"
-                styleClass="muted-note"
-                  wrappingWidth="150"/>
+            <VBox spacing="2" alignment="TOP_LEFT" style="-fx-padding: 8 0 0 6;">
+                <Label fx:id="sidebarProfileName" styleClass="page-title"/>
+                <Label fx:id="sidebarProfileType" styleClass="page-subtitle"/>
+            </VBox>
         </VBox>
     </left>
 
@@ -161,100 +162,6 @@
 
                 <Separator/>
 
-                <!-- Modifier le profil -->
-                    <VBox spacing="15" styleClass="card">
-
-                    <Label text="Modifier mon profil"
-                              styleClass="section-title"/>
-
-                    <Label fx:id="profileMessageLabel"
-                           text=""
-                           visible="false"
-                           wrapText="true"
-                              styleClass="muted-note"/>
-
-                    <GridPane hgap="15" vgap="15">
-                        <!-- Nom -->
-                        <Label text="Nom" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                        <TextField fx:id="nomField"
-                                   GridPane.rowIndex="0" GridPane.columnIndex="1"
-                                   styleClass="field"
-                                   prefWidth="300"/>
-
-                        <!-- Prénom -->
-                        <Label text="Prénom" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                        <TextField fx:id="prenomField"
-                                   GridPane.rowIndex="1" GridPane.columnIndex="1"
-                                   styleClass="field"
-                                   prefWidth="300"/>
-
-                        <!-- Email -->
-                        <Label text="Email" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                        <TextField fx:id="emailField"
-                                   GridPane.rowIndex="2" GridPane.columnIndex="1"
-                                   styleClass="field"
-                                   prefWidth="300"/>
-
-                        <!-- Téléphone -->
-                        <Label text="Téléphone" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                        <TextField fx:id="telephoneField"
-                                   GridPane.rowIndex="3" GridPane.columnIndex="1"
-                                   styleClass="field"
-                                   prefWidth="300"/>
-
-                        <columnConstraints>
-                            <ColumnConstraints minWidth="100" prefWidth="100"/>
-                            <ColumnConstraints hgrow="ALWAYS"/>
-                        </columnConstraints>
-                    </GridPane>
-
-                    <!-- Adresse -->
-                    <VBox spacing="5">
-                        <Label text="Adresse"/>
-                        <TextArea fx:id="adresseField"
-                                  styleClass="field"
-                                  prefRowCount="3"
-                                  maxWidth="415"/>
-                    </VBox>
-
-                    <!-- Bouton de sauvegarde -->
-                    <HBox spacing="10">
-                        <Button fx:id="saveProfileButton"
-                                text="💾 Sauvegarder les modifications"
-                                onAction="#handleSaveProfile"
-                            styleClass="btn btn-primary"
-                                prefWidth="250"
-                                prefHeight="40"/>
-                    </HBox>
-                </VBox>
-
-                <Separator/>
-
-                <!-- Actions rapides -->
-                <VBox spacing="15">
-                    <Label text="Actions rapides"
-                           styleClass="section-title"/>
-
-                    <HBox spacing="15">
-                        <Button text="📊 Voir mes projets"
-                                onAction="#handleProjects"
-                                prefWidth="200"
-                                prefHeight="50"
-                            styleClass="btn btn-secondary"/>
-
-                        <Button text="💰 Mes investissements"
-                                onAction="#handleInvestments"
-                                prefWidth="200"
-                                prefHeight="50"
-                            styleClass="btn btn-secondary"/>
-
-                        <Button text="⚙️ Paramètres"
-                                onAction="#handleSettings"
-                                prefWidth="200"
-                                prefHeight="50"
-                            styleClass="btn btn-secondary"/>
-                    </HBox>
-                </VBox>
 
             </VBox>
         </ScrollPane>

@@ -18,7 +18,7 @@
                     <Insets top="16" right="12" bottom="16" left="12"/>
                 </padding>
                 <Label text="💼" style="-fx-font-size:18px;"/>
-                <Label text="GreenLedger Investisseur" styleClass="sidebar-title"/>
+                <Label fx:id="lblSidebarTitle" text="GreenLedger Investisseur" styleClass="sidebar-title"/>
             </HBox>
             <Separator styleClass="sidebar-sep"/>
             <Button fx:id="btnNavDashboard" text="📊 Tableau de bord" onAction="#handleGoDashboard" styleClass="nav-btn"/>
@@ -26,6 +26,11 @@
             <Button fx:id="btnNavFinancement" text="💳 Financement avancé" onAction="#handleGoFinancement" styleClass="nav-btn"/>
             <Button fx:id="btnNavSettings" text="⚙️ Paramètres" onAction="#handleGoSettings" styleClass="nav-btn"/>
             <Region VBox.vgrow="ALWAYS"/>
+            <VBox spacing="2" alignment="TOP_LEFT" style="-fx-padding: 10 0 0 12;">
+                <Label fx:id="lblProfileName" styleClass="page-title"/>
+                <Label fx:id="lblProfileType" styleClass="page-subtitle"/>
+                <Button text="✏️ Modifier profil" styleClass="btn-secondary" onAction="#handleEditProfile"/>
+            </VBox>
         </VBox>
     </left>
 
@@ -35,7 +40,7 @@
                 <padding>
                     <Insets top="16" right="24" bottom="16" left="24"/>
                 </padding>
-                <Label text="💰 Gestion des Investissements" 
+                <Label fx:id="lblPageTitle" text="💰 Gestion des Investissements"
                        styleClass="page-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button text="← Retour"

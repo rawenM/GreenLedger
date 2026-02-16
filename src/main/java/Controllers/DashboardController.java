@@ -13,6 +13,8 @@ import Models.TypeUtilisateur;
 import Models.User;
 import Services.IUserService;
 import Services.UserServiceImpl;
+import Services.EvaluationService;
+import Models.Evaluation;
 import Utils.SessionManager;
 import org.GreenLedger.MainFX;
 
@@ -31,6 +33,8 @@ public class DashboardController {
     @FXML private Label userTypeLabel;
     @FXML private Label memberSinceLabel;
     @FXML private Label lastLoginLabel;
+    @FXML private Label sidebarProfileName;
+    @FXML private Label sidebarProfileType;
 
     // Statistiques (à adapter selon le type d'utilisateur)
     @FXML private Label stat1Label;
@@ -58,6 +62,7 @@ public class DashboardController {
     @FXML private Label profileMessageLabel;
 
     private final IUserService userService = new UserServiceImpl();
+    private final EvaluationService evaluationService = new EvaluationService();
     private User currentUser;
 
     private static final DateTimeFormatter DATE_FORMATTER =
@@ -165,6 +170,12 @@ public class DashboardController {
             ex.printStackTrace();
         }
 
+        try {
+            configureNavigationForRole();
+        } catch (Exception ex) {
+            System.err.println("[CLEAN] Erreur lors de la configuration de navigation: " + ex.getMessage());
+        }
+
         System.out.println("[DEBUG] setCurrentUser termine avec succes");
     }
 
@@ -186,10 +197,18 @@ public class DashboardController {
                 userNameLabel.setText(currentUser.getNomComplet());
             }
             if (userEmailLabel != null) {
-                userEmailLabel.setText(currentUser.getEmail());
+                userEmailLabel.setText("");
+                userEmailLabel.setVisible(false);
+                userEmailLabel.setManaged(false);
             }
             if (userTypeLabel != null && currentUser.getTypeUtilisateur() != null) {
                 userTypeLabel.setText(currentUser.getTypeUtilisateur().getLibelle());
+            }
+            if (sidebarProfileName != null) {
+                sidebarProfileName.setText(currentUser.getNomComplet());
+            }
+            if (sidebarProfileType != null && currentUser.getTypeUtilisateur() != null) {
+                sidebarProfileType.setText(currentUser.getTypeUtilisateur().getLibelle());
             }
 
             // Dates
@@ -235,6 +254,8 @@ public class DashboardController {
                 loadProjectOwnerStatistics();
             } else if (currentUser.getTypeUtilisateur() == TypeUtilisateur.ADMIN) {
                 loadAdminStatistics();
+            } else if (currentUser.getTypeUtilisateur() == TypeUtilisateur.EXPERT_CARBONE) {
+                loadExpertStatistics();
             }
         } catch (Exception ex) {
             System.err.println("[CLEAN] Erreur lors du chargement des statistiques: " + ex.getMessage());
@@ -335,6 +356,44 @@ public class DashboardController {
         }
     }
 
+    private void loadExpertStatistics() {
+        try {
+            stat1Label.setText("Projets a evaluer");
+            stat1Value.setText("0");
+
+            stat2Label.setText("Evaluations completees");
+            stat2Value.setText("0");
+
+            stat3Label.setText("Taux de conformite");
+            stat3Value.setText("0%");
+        } catch (Exception ex) {
+            System.err.println("[CLEAN] Erreur stats expert: " + ex.getMessage());
+        }
+    }
+
+    private void configureNavigationForRole() {
+        if (currentUser == null || currentUser.getTypeUtilisateur() == null) {
+            return;
+        }
+        TypeUtilisateur type = currentUser.getTypeUtilisateur();
+        if (type == TypeUtilisateur.EXPERT_CARBONE) {
+            projectsButton.setText("📁 Voir projets");
+            investmentsButton.setText("🧾 Evaluations carbone");
+            financingButton.setVisible(false);
+            financingButton.setManaged(false);
+        } else if (type == TypeUtilisateur.PORTEUR_PROJET) {
+            projectsButton.setText("📁 Mes projets");
+            investmentsButton.setText("📊 Mes evaluations");
+            financingButton.setVisible(false);
+            financingButton.setManaged(false);
+        } else if (type == TypeUtilisateur.INVESTISSEUR) {
+            projectsButton.setText("💰 Investissements");
+            investmentsButton.setText("💳 Financement avance");
+            financingButton.setVisible(false);
+            financingButton.setManaged(false);
+        }
+    }
+
     /**
      * Charger le formulaire de profil
      */
@@ -382,9 +441,25 @@ public class DashboardController {
      */
     @FXML
     private void handleProjects(ActionEvent event) {
-        showAlert("Information",
-                "La gestion des projets sera disponible dans le module 'Gestion Projet'",
-                Alert.AlertType.INFORMATION);
+        if (currentUser == null || currentUser.getTypeUtilisateur() == null) {
+            return;
+        }
+        TypeUtilisateur type = currentUser.getTypeUtilisateur();
+        try {
+            if (type == TypeUtilisateur.EXPERT_CARBONE) {
+                MainFX.setRoot("expertProjet");
+            } else if (type == TypeUtilisateur.PORTEUR_PROJET) {
+                MainFX.setRoot("GestionProjet");
+            } else if (type == TypeUtilisateur.INVESTISSEUR) {
+                MainFX.setRoot("fxml/investor_financing");
+            } else {
+                showAlert("Information",
+                        "La gestion des projets sera disponible prochainement",
+                        Alert.AlertType.INFORMATION);
+            }
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible de charger l'ecran", Alert.AlertType.ERROR);
+        }
     }
 
     /**
@@ -393,6 +468,18 @@ public class DashboardController {
     @FXML
     private void handleInvestments(ActionEvent event) {
         try {
+            if (currentUser != null && currentUser.getTypeUtilisateur() == TypeUtilisateur.EXPERT_CARBONE) {
+                MainFX.setRoot("gestionCarbone");
+                return;
+            }
+            if (currentUser != null && currentUser.getTypeUtilisateur() == TypeUtilisateur.PORTEUR_PROJET) {
+                Evaluation latest = getLatestEvaluation();
+                if (latest != null) {
+                    ProjectEvaluationViewController.setCurrentProjet(latest.getIdProjet(), latest.getTitreProjet());
+                }
+                MainFX.setRoot("projectEvaluationView");
+                return;
+            }
             MainFX.setRoot("fxml/investor_financing");
 
         } catch (IOException e) {
@@ -406,9 +493,11 @@ public class DashboardController {
      */
     @FXML
     private void handleSettings(ActionEvent event) {
-        showAlert("Information",
-                "Les paramètres seront disponibles prochainement",
-                Alert.AlertType.INFORMATION);
+        try {
+            MainFX.setRoot("settings");
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible de charger les parametres", Alert.AlertType.ERROR);
+        }
     }
 
     /**
@@ -417,7 +506,13 @@ public class DashboardController {
     @FXML
     private void handleAdvancedFinancing(ActionEvent event) {
         try {
-            MainFX.setRoot("financement");
+            if (currentUser != null && currentUser.getTypeUtilisateur() == TypeUtilisateur.INVESTISSEUR) {
+                MainFX.setRoot("financement");
+            } else {
+                showAlert("Information",
+                        "Module non disponible pour ce profil",
+                        Alert.AlertType.INFORMATION);
+            }
 
         } catch (IOException e) {
             showAlert("Erreur", "Impossible de charger le module de financement avancé", Alert.AlertType.ERROR);
@@ -471,14 +566,7 @@ public class DashboardController {
                 try {
                     userService.logout(currentUser);
 
-                    // Retour à la page de connexion
-                    Parent root = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
-                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                    stage.setScene(new Scene(root));
-                    stage.setTitle("Connexion");
-                    stage.setMaximized(false);
-                    stage.show();
-
+                    MainFX.setRoot("fxml/login");
                 } catch (IOException e) {
                     showAlert("Erreur", "Impossible de se déconnecter", Alert.AlertType.ERROR);
                     e.printStackTrace();
@@ -528,5 +616,10 @@ public class DashboardController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    private Evaluation getLatestEvaluation() {
+        java.util.List<Evaluation> items = evaluationService.afficher();
+        return (items == null || items.isEmpty()) ? null : items.get(0);
     }
 }
