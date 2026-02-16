@@ -351,4 +351,22 @@ public class FinancementController extends BaseController {
             showError("Erreur", "Impossible de naviguer aux paramètres");
         }
     }
+
+    /**
+     * Handle sidebar button: New Financing
+     */
+    @FXML
+    private void btnNewFinancement_click() {
+        clearFinFields();
+        txtProjetId.requestFocus();
+    }
+
+    /**
+     * Handle sidebar button: New Offer
+     */
+    @FXML
+    private void btnNewOffre_click() {
+        clearOffreFields();
+        txtTypeOffre.requestFocus();
+    }
 }

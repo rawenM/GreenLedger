@@ -21,7 +21,8 @@
 
         <Separator styleClass="sidebar-sep"/>
 
-        <Button fx:id="btnNewFinancement" text="➕ Nouveau" styleClass="nav-btn"/>
+        <Button fx:id="btnNewFinancement" text="➕ Nouveau Financement" onAction="#btnNewFinancement_click" styleClass="nav-btn"/>
+        <Button fx:id="btnNewOffre" text="➕ Nouvelle Offre" onAction="#btnNewOffre_click" styleClass="nav-btn"/>
         <Button fx:id="btnRefresh" text="🔄 Actualiser" styleClass="nav-btn" onAction="#refreshAll"/>
         <Button fx:id="btnNavSettings" text="⚙️ Paramètres" onAction="#handleGoSettings" styleClass="nav-btn"/>
 
@@ -220,9 +221,9 @@
                     </HBox>
 
                     <HBox spacing="12">
-                        <Button text="➕ Ajouter Offre" onAction="#ajouterOffre" styleClass="btn-primary"/>
-                        <Button text="✏️ Modifier Offre" onAction="#modifierOffre" styleClass="btn-secondary"/>
-                        <Button text="🗑️ Supprimer Offre" onAction="#supprimerOffre" styleClass="btn-danger"/>
+                        <Button text="➕ Ajouter Offre" onAction="#ajouterOffre" styleClass="btn btn-primary" prefHeight="36" prefWidth="140"/>
+                        <Button text="✏️ Modifier Offre" onAction="#modifierOffre" styleClass="btn btn-secondary" prefHeight="36" prefWidth="140"/>
+                        <Button text="🗑️ Supprimer Offre" onAction="#supprimerOffre" styleClass="btn btn-danger" prefHeight="36" prefWidth="140"/>
                     </HBox>
                 </VBox>
 
