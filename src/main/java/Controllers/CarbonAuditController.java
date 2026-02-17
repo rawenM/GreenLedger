@@ -23,6 +23,7 @@ import Models.User;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 public class CarbonAuditController extends BaseController {
 
@@ -117,6 +118,9 @@ public class CarbonAuditController extends BaseController {
         if (btnSettings != null) {
             btnSettings.setOnAction(event -> showSettings());
         }
+
+        // Appliquer formatters / contrôles de saisie pour les champs statiques du formulaire de critères
+        setupStaticInputConstraints();
 
         if (tableAudits != null) {
             tableAudits.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
@@ -259,6 +263,81 @@ public class CarbonAuditController extends BaseController {
             boxAddCritere.setVisible(true);
             boxAddCritere.setManaged(true);
         }
+    }
+
+    /**
+     * Configure formatters / listeners pour les champs statiques (référence de critère).
+     * - Nom du critere : longueur max 30, min 8 (validation visuelle)
+     * - Poids : accept digits only, validation 1..10
+     * - Commentaire critique : max 250, min 8 (validation visuelle)
+     */
+    private void setupStaticInputConstraints() {
+        // Nom critere : limiter longueur et indiquer visuellement si en dehors des bornes
+        if (txtNomCritere != null) {
+            limitTextLength(txtNomCritere, 30);
+            txtNomCritere.textProperty().addListener((obs, oldV, newV) -> {
+                boolean invalid = !newV.trim().isEmpty() && (newV.trim().length() < 8 || newV.trim().length() > 30);
+                markInvalid(txtNomCritere, invalid);
+            });
+        }
+
+        // Commentaire du critere : limiter longueur et marquer si en dehors des bornes
+        if (txtCommentaireCritere != null) {
+            limitTextLength(txtCommentaireCritere, 250);
+            txtCommentaireCritere.textProperty().addListener((obs, oldV, newV) -> {
+                boolean invalid = !newV.trim().isEmpty() && (newV.trim().length() < 8 || newV.trim().length() > 250);
+                markInvalid(txtCommentaireCritere, invalid);
+            });
+        }
+
+        // Poids (txtNote) : chiffres seulement et marqueur visuel si hors 1-10
+        if (txtNote != null) {
+            UnaryOperator<TextFormatter.Change> integerFilter = change -> {
+                String newText = change.getControlNewText();
+                if (newText.matches("\\d{0,2}")) {
+                    return change;
+                }
+                return null;
+            };
+            txtNote.setTextFormatter(new TextFormatter<>(integerFilter));
+            txtNote.textProperty().addListener((obs, oldV, newV) -> {
+                if (newV == null || newV.trim().isEmpty()) {
+                    // Do not mark as invalid immediately - allow empty until submission
+                    markInvalid(txtNote, false);
+                    return;
+                }
+                try {
+                    int val = Integer.parseInt(newV.trim());
+                    markInvalid(txtNote, val < 1 || val > 10);
+                } catch (NumberFormatException e) {
+                    markInvalid(txtNote, true);
+                }
+            });
+        }
+    }
+
+    /**
+     * Marque visuellement un contrôle comme invalide (bordure rouge).
+     */
+    private void markInvalid(Control control, boolean invalid) {
+        if (control == null) return;
+        if (invalid) {
+            control.setStyle("-fx-border-color: #d9534f; -fx-border-width: 1px;");
+        } else {
+            control.setStyle(null);
+        }
+    }
+
+    /**
+     * Limite la longueur du texte contenu dans un TextInputControl (TextField / TextArea).
+     */
+    private void limitTextLength(TextInputControl control, int maxLength) {
+        if (control == null) return;
+        control.textProperty().addListener((obs, oldV, newV) -> {
+            if (newV != null && newV.length() > maxLength) {
+                control.setText(newV.substring(0, maxLength));
+            }
+        });
     }
 
     private void refreshCriteres() {
@@ -451,8 +530,11 @@ public class CarbonAuditController extends BaseController {
 
     @FXML
     void ajouterCritere() {
-        String nom = requireLength(txtNomCritere, "Nom du critere", 3, 100);
-        String description = requireText(txtCommentaireCritere, "Description");
+        // Nom du critere : min 8 max 30
+        String nom = requireLength(txtNomCritere, "Nom du critere", 8, 30);
+        // Description : min 8 max 250
+        String description = requireLength(txtCommentaireCritere, "Description", 8, 250);
+        // Poids : entier entre 1 et 10
         Integer poids = requireNote(txtNote.getText());
         if (nom == null || description == null || poids == null) {
             return;
@@ -471,8 +553,8 @@ public class CarbonAuditController extends BaseController {
             showError("Selectionnez un critere.");
             return;
         }
-        String nom = requireLength(txtNomCritere, "Nom du critere", 3, 100);
-        String description = requireText(txtCommentaireCritere, "Description");
+        String nom = requireLength(txtNomCritere, "Nom du critere", 8, 30);
+        String description = requireLength(txtCommentaireCritere, "Description", 8, 250);
         Integer poids = requireNote(txtNote.getText());
         if (nom == null || description == null || poids == null) {
             return;
@@ -503,9 +585,15 @@ public class CarbonAuditController extends BaseController {
     }
 
     private void clearCritereForm() {
-        txtNomCritere.clear();
-        txtNote.clear();
-        txtCommentaireCritere.clear();
+        if (txtNomCritere != null) {
+            txtNomCritere.clear();
+        }
+        if (txtNote != null) {
+            txtNote.clear();
+        }
+        if (txtCommentaireCritere != null) {
+            txtCommentaireCritere.clear();
+        }
     }
 
     private Evaluation readEvaluationFromForm(boolean requireId) {
@@ -607,6 +695,9 @@ public class CarbonAuditController extends BaseController {
         }
     }
 
+    /**
+     * Poids: entier entre 1 et 10.
+     */
     private Integer requireNote(String text) {
         Integer note = parseInt(text, "Note");
         if (note == null) {
@@ -860,6 +951,12 @@ public class CarbonAuditController extends BaseController {
         return String.format(java.util.Locale.US, "%.2f", score);
     }
 
+    /**
+     * Collecte des résultats depuis les champs dynamiques.
+     * On applique ici la validation requise :
+     * - note obligatoire et entre 1 et 10
+     * - commentaire technique entre 8 et 250
+     */
     private List<EvaluationResult> collectResultatsFromFields() {
         if (criteriaFieldsBox == null) {
             return java.util.Collections.emptyList();
@@ -880,7 +977,8 @@ public class CarbonAuditController extends BaseController {
             }
 
             Integer note = requireNote(noteField.getText());
-            String commentaire = requireText(commentField, "Commentaire technique");
+            // Commentaire technique : min 8 max 250
+            String commentaire = requireLength(commentField, "Commentaire technique", 8, 250);
             if (idCritere == null || note == null || commentaire == null) {
                 return null;
             }
@@ -920,10 +1018,43 @@ public class CarbonAuditController extends BaseController {
             noteField.getStyleClass().add("field");
             noteField.setPrefWidth(120);
 
+            // TextFormatter pour n'accepter que des chiffres (0-99)
+            UnaryOperator<TextFormatter.Change> integerFilter = change -> {
+                String newText = change.getControlNewText();
+                if (newText.matches("\\d{0,2}")) {
+                    return change;
+                }
+                return null;
+            };
+            noteField.setTextFormatter(new TextFormatter<>(integerFilter));
+
+            // Validation visuelle à la saisie (on marque si hors bornes)
+            noteField.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal == null || newVal.trim().isEmpty()) {
+                    markInvalid(noteField, false); // allow empty until submission
+                    updateScorePreview();
+                    return;
+                }
+                try {
+                    int v = Integer.parseInt(newVal.trim());
+                    markInvalid(noteField, v < 1 || v > 10);
+                } catch (NumberFormatException e) {
+                    markInvalid(noteField, true);
+                }
+                updateScorePreview();
+            });
+
             javafx.scene.control.TextArea commentField = new javafx.scene.control.TextArea();
             commentField.setPromptText("Commentaire technique");
             commentField.getStyleClass().addAll("field", "textarea");
             commentField.setPrefRowCount(2);
+
+            // Limiter longueur et validation visuelle
+            limitTextLength(commentField, 250);
+            commentField.textProperty().addListener((obs, oldV, newV) -> {
+                boolean invalid = !newV.trim().isEmpty() && (newV.trim().length() < 8 || newV.trim().length() > 250);
+                markInvalid(commentField, invalid);
+            });
 
             EvaluationResult existingResult = existing.get(reference.getIdCritere());
             if (existingResult != null) {
