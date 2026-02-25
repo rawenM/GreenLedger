@@ -1421,9 +1421,61 @@ public class CarbonAuditController extends BaseController {
                     evaluation, resultats, suggestion, file, signaturePng, evaluatorName, evaluatorRole
             );
 
+            // After local PDF generation: call remote extraction (pdfrest) using PdfRestService.
+            // Run extraction in background thread to avoid blocking UI.
+            final java.io.File exported = file;
+            final String apiMsgPrefix = "Extraction distante: ";
+            new Thread(() -> {
+                try {
+                    // Prefer Adobe service if configured
+                    Services.AdobePdfService adobe = new Services.AdobePdfService();
+                    String extracted = null;
+                    if (adobe.isConfigured()) {
+                        try {
+                            extracted = adobe.extractTextFromFilePath(exported.getAbsolutePath());
+                        } catch (Exception adEx) {
+                            System.err.println("Adobe extraction failed: " + adEx.getMessage());
+                        }
+                    }
+                    if (extracted == null || extracted.isEmpty()) {
+                        // fallback to PdfRestService
+                        try {
+                            Services.PdfRestService rest = new Services.PdfRestService();
+                            extracted = rest.extractTextFromFilePath(exported.getAbsolutePath());
+                        } catch (Exception prEx) {
+                            System.err.println("PdfRest extraction failed: " + prEx.getMessage());
+                        }
+                    }
+                    final String display = (extracted == null || extracted.isEmpty()) ? "(Aucun texte extrait)" : extracted;
+                    Platform.runLater(() -> {
+                        // Populate AI insights area with extracted text summary
+                        if (txtAIInsights != null) {
+                            String previous = txtAIInsights.getText() == null ? "" : txtAIInsights.getText();
+                            String added = (previous.isEmpty() ? "" : (previous + "\n\n")) + "[Extraction PDF] \n" + display;
+                            txtAIInsights.setText(added);
+                        }
+                        Alert info = new Alert(Alert.AlertType.INFORMATION);
+                        info.setTitle("Extraction PDF");
+                        info.setHeaderText("Extraction terminée");
+                        javafx.scene.control.TextArea ta = new javafx.scene.control.TextArea(display);
+                        ta.setWrapText(true);
+                        ta.setEditable(false);
+                        ta.setPrefWidth(600);
+                        ta.setPrefHeight(400);
+                        info.getDialogPane().setContent(ta);
+                        info.showAndWait();
+                    });
+                } catch (Exception ex) {
+                    final String msg = ex.getMessage();
+                    Platform.runLater(() -> {
+                        showError(apiMsgPrefix + (msg == null ? "Erreur inconnue" : msg));
+                    });
+                }
+            }).start();
+
             Alert ok = new Alert(Alert.AlertType.INFORMATION);
             ok.setHeaderText("Export PDF réussi");
-            ok.setContentText("Fichier sauvegardé: " + file.getAbsolutePath());
+            ok.setContentText("Fichier sauvegardé: " + file.getAbsolutePath() + "\nL'extraction distante est en cours...");
             ok.showAndWait();
 
         } catch (Exception ex) {

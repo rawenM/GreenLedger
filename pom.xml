@@ -70,6 +70,10 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.36</version>
         </dependency>
+
+        <!-- NOTE: Adobe PDF Services SDK dependency removed because the artifact pdfservices-sdk:1.0.0 is not available on Maven Central by default.
+             If you want to use the official SDK, follow one of the options in the README or the assistant guidance to install it locally or add Adobe repository. -->
+
     </dependencies>
     <build>
         <plugins>
