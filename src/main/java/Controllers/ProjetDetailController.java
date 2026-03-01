@@ -1,5 +1,6 @@
 package Controllers;
 
+import Models.Budget;
 import Models.Projet;
 import Services.ProjetService;
 import javafx.fxml.FXML;
@@ -16,7 +17,9 @@ public class ProjetDetailController {
     @FXML private Label lblId;
     @FXML private Label lblStatut;
     @FXML private TextField tfTitre;
-    @FXML private TextField tfBudget;
+    @FXML private TextField tfBudgetMontant;
+    @FXML private ComboBox<String> cbBudgetDevise;
+    @FXML private TextArea taBudgetRaison;
     @FXML private TextField tfScoreEsg;
     @FXML private TextField tfCompanyAddress;
     @FXML private TextField tfCompanyEmail;
@@ -24,6 +27,13 @@ public class ProjetDetailController {
     @FXML private TextArea taDescription;
     @FXML private Button btnSaveChanges;
     @FXML private Button btnCancelEdit;
+
+    @FXML
+    public void initialize() {
+        if (cbBudgetDevise != null) {
+            cbBudgetDevise.getItems().setAll("TND", "EUR", "USD");
+        }
+    }
 
     public void setProjet(Projet p) {
         this.projet = p;
@@ -64,7 +74,10 @@ public class ProjetDetailController {
 
         boolean lockedTitreBudget = !"DRAFT".equalsIgnoreCase(projet.getStatut());
         tfTitre.setDisable(lockedTitreBudget);
-        tfBudget.setDisable(lockedTitreBudget);
+        tfBudgetMontant.setDisable(lockedTitreBudget);
+        if (cbBudgetDevise != null) cbBudgetDevise.setDisable(lockedTitreBudget);
+        if (taBudgetRaison != null) taBudgetRaison.setDisable(lockedTitreBudget);
+
 
         taDescription.setDisable(false);
         tfCompanyAddress.setDisable(false);
@@ -90,6 +103,7 @@ public class ProjetDetailController {
         projet.setCompanyEmail(emptyToNull(tfCompanyEmail.getText()));
         projet.setCompanyPhone(emptyToNull(tfCompanyPhone.getText()));
 
+
         if (!isDraft) {
             service.updateDescriptionOnly(
                     projet.getId(),
@@ -103,18 +117,31 @@ public class ProjetDetailController {
             return;
         }
 
-
         String titre = safe(tfTitre.getText());
         if (titre.length() < 3) { error("Titre: min 3 caractères."); return; }
 
-        double budget;
+        double montant;
         try {
-            budget = Double.parseDouble(safe(tfBudget.getText()));
-            if (budget <= 0) throw new Exception();
+            montant = Double.parseDouble(safe(tfBudgetMontant.getText()));
+            if (montant <= 0) throw new Exception();
         } catch (Exception e) { error("Budget invalide (>0)."); return; }
 
+        String raison = safe(taBudgetRaison != null ? taBudgetRaison.getText() : null);
+        if (raison.length() < 3) { error("Raison budget: min 3 caractères."); return; }
+
+        String devise = (cbBudgetDevise != null && cbBudgetDevise.getValue() != null)
+                ? cbBudgetDevise.getValue()
+                : "TND";
+
+        Budget b = projet.getBudgetObj();
+        if (b == null) b = new Budget();
+        b.setMontant(montant);
+        b.setRaison(raison);
+        b.setDevise(devise);
+        b.setIdProjet(projet.getId());
+
         projet.setTitre(titre);
-        projet.setBudget(budget);
+        projet.setBudget(b);
 
         service.update(projet);
         if (onChanged != null) onChanged.run();
@@ -128,17 +155,25 @@ public class ProjetDetailController {
         lblStatut.setText(projet.getStatut());
 
         tfTitre.setText(projet.getTitre());
-        tfBudget.setText(String.valueOf(projet.getBudget()));
+
+        Budget b = projet.getBudgetObj();
+        tfBudgetMontant.setText(String.valueOf(projet.getBudget()));
+        if (taBudgetRaison != null) taBudgetRaison.setText(b != null ? b.getRaison() : "");
+        if (cbBudgetDevise != null) cbBudgetDevise.setValue(b != null && b.getDevise() != null ? b.getDevise() : "TND");
+
         Integer score = projet.getScoreEsg();
         tfScoreEsg.setText(score == null ? "En attente d'évaluation" : String.valueOf(score));
+
         taDescription.setText(projet.getDescription());
         tfCompanyAddress.setText(projet.getCompanyAddress());
         tfCompanyEmail.setText(projet.getCompanyEmail());
         tfCompanyPhone.setText(projet.getCompanyPhone());
 
-        // view mode
+
         tfTitre.setDisable(true);
-        tfBudget.setDisable(true);
+        tfBudgetMontant.setDisable(true);
+        if (cbBudgetDevise != null) cbBudgetDevise.setDisable(true);
+        if (taBudgetRaison != null) taBudgetRaison.setDisable(true);
         tfScoreEsg.setDisable(true);
 
         taDescription.setDisable(true);
@@ -168,6 +203,7 @@ public class ProjetDetailController {
     }
 
     private String safe(String s) { return s == null ? "" : s.trim(); }
+
     private String emptyToNull(String s) {
         String v = safe(s);
         return v.isEmpty() ? null : v;

@@ -1,14 +1,15 @@
 package Controllers;
 
+import Models.Budget;
 import Models.Projet;
+import Models.TypeUtilisateur;
+import Models.User;
 import Services.ProjetService;
+import Utils.NavigationContext;
+import Utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.GreenLedger.MainFX;
-import Utils.NavigationContext;
-import Utils.SessionManager;
-import Models.TypeUtilisateur;
-import Models.User;
 
 public class ProjetCreateController {
 
@@ -16,17 +17,31 @@ public class ProjetCreateController {
     private final ProjetService service = new ProjetService();
 
     @FXML private TextField tfTitre;
-    @FXML private TextField tfBudget;
+    @FXML private TextField tfBudgetMontant;
+    @FXML private ComboBox<String> cbBudgetDevise;
+    @FXML private TextArea taBudgetRaison;
     @FXML private TextField tfCompanyAddress;
     @FXML private TextField tfCompanyEmail;
     @FXML private TextField tfCompanyPhone;
     @FXML private TextArea taDescription;
 
     @FXML
-    private void onBack() { goHome(); }
+    public void initialize() {
+        if (cbBudgetDevise != null) {
+            cbBudgetDevise.getItems().setAll("TND", "EUR", "USD");
+            cbBudgetDevise.setValue("TND");
+        }
+    }
 
     @FXML
-    private void onSaveDraft() { createWithStatus("DRAFT"); }
+    private void onBack() {
+        goHome();
+    }
+
+    @FXML
+    private void onSaveDraft() {
+        createWithStatus("DRAFT");
+    }
 
     @FXML
     private void onAdd() {
@@ -37,19 +52,37 @@ public class ProjetCreateController {
         String titre = safe(tfTitre.getText());
         if (titre.length() < 3) { error("Titre: min 3 caractères."); return; }
 
-        double budget;
+        double montant;
         try {
-            budget = Double.parseDouble(safe(tfBudget.getText()));
-            if (budget <= 0) throw new Exception();
-        } catch (Exception e) { error("Budget invalide (>0)."); return; }
+            montant = Double.parseDouble(safe(tfBudgetMontant.getText()));
+            if (montant <= 0) throw new Exception();
+        } catch (Exception e) {
+            error("Budget invalide (>0).");
+            return;
+        }
+
+        String raison = safe(taBudgetRaison != null ? taBudgetRaison.getText() : null);
+        if (raison.length() < 3) { error("Raison budget: min 3 caractères."); return; }
+
+        String devise = (cbBudgetDevise != null && cbBudgetDevise.getValue() != null)
+                ? cbBudgetDevise.getValue()
+                : "TND";
+
+        Budget budget = new Budget();
+        budget.setMontant(montant);
+        budget.setRaison(raison);
+        budget.setDevise(devise);
 
         Projet p = new Projet();
-        p.setEntrepriseId(TEST_ENTREPRISE_ID);
+        p.setEntrepriseId(resolveEntrepriseId());
         p.setTitre(titre);
         p.setBudget(budget);
         p.setDescription(taDescription.getText());
         p.setStatut(statut);
+
+
         p.setScoreEsg(null);
+
         p.setCompanyAddress(emptyToNull(tfCompanyAddress.getText()));
         p.setCompanyEmail(emptyToNull(tfCompanyEmail.getText()));
         p.setCompanyPhone(emptyToNull(tfCompanyPhone.getText()));
@@ -72,13 +105,18 @@ public class ProjetCreateController {
             return "fxml/dashboard";
         }
         String previous = NavigationContext.getInstance().getPreviousPage();
-        if (previous != null && !previous.isBlank()) {
-            return previous;
-        }
+        if (previous != null && !previous.isBlank()) return previous;
         return "GestionProjet";
     }
 
+    private int resolveEntrepriseId() {
+        User user = SessionManager.getInstance().getCurrentUser();
+        if (user != null && user.getId() != null) return user.getId().intValue();
+        return TEST_ENTREPRISE_ID;
+    }
+
     private String safe(String s) { return s == null ? "" : s.trim(); }
+
     private String emptyToNull(String s) {
         String v = safe(s);
         return v.isEmpty() ? null : v;

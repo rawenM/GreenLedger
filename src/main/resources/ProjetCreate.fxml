@@ -32,7 +32,24 @@
 
             <VBox spacing="8">
                 <Label text="Budget" styleClass="form-label"/>
-                <TextField fx:id="tfBudget" styleClass="field"/>
+
+                <HBox spacing="12">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Montant" styleClass="form-label"/>
+                        <TextField fx:id="tfBudgetMontant" styleClass="field"/>
+                    </VBox>
+
+                    <VBox spacing="6" prefWidth="140">
+                        <Label text="Devise" styleClass="form-label"/>
+                        <ComboBox fx:id="cbBudgetDevise" styleClass="field"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="6">
+                    <Label text="Raison" styleClass="form-label"/>
+                    <TextArea fx:id="taBudgetRaison" wrapText="true" styleClass="field textarea"
+                              style="-fx-pref-height: 90px;"/>
+                </VBox>
             </VBox>
 
             <VBox spacing="8">
