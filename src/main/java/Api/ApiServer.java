@@ -12,14 +12,18 @@ import Services.PdfService;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +53,8 @@ public class ApiServer {
         server.createContext("/api/ai/evaluations/suggest-decision", this::handleSuggestDecision);
         server.createContext("/api/evaluations/pdf", this::handleEvaluationPdf);
         server.createContext("/api/ai/doccat", this::handleDoccat); // ML debug endpoint
+        server.createContext("/api/ai/evaluations/predict", this::handlePredictDecision);
+        server.createContext("/predict", this::handlePredictDecision);
         server.createContext("/webhooks/stripe", this::handleStripeWebhook); // Stripe webhook endpoint
 
         server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
@@ -207,6 +213,161 @@ public class ApiServer {
         send(exchange, 200, body);
     }
 
+    private void handlePredictDecision(HttpExchange exchange) throws IOException {
+        if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+            send(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
+            return;
+        }
+
+        System.out.println("[ML] /predict request received");
+
+        String body;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            body = sb.toString();
+        }
+
+        if (body == null || body.isBlank()) {
+            send(exchange, 400, "{\"error\":\"Empty request body\"}");
+            System.out.println("[ML] /predict failed: empty body");
+            return;
+        }
+
+        String projectRoot = System.getenv().getOrDefault("PROJECT_ROOT", System.getProperty("user.dir"));
+        File rootDir = resolveProjectRoot(projectRoot);
+        File modelFile = resolveModelFile(rootDir);
+        if (!modelFile.exists()) {
+            boolean built = tryBuildModel(rootDir);
+            if (!built || !modelFile.exists()) {
+                send(exchange, 500, "{\"error\":\"Model file missing. Run ml/run_pipeline.py to generate models/carbon_model.joblib\"}");
+                System.out.println("[ML] /predict failed: model missing");
+                return;
+            }
+        }
+
+        String python = resolvePythonExecutable();
+        if (python == null) {
+            String msg = "Python introuvable. Définissez PYTHON avec le chemin complet (ex: C:\\Users\\Mega-PC\\AppData\\Local\\Programs\\Python\\Python312\\python.exe).";
+            send(exchange, 500, "{\"error\":\"" + escape(msg) + "\"}");
+            System.out.println("[ML] /predict failed: python not found");
+            return;
+        }
+
+        File scriptFile = new File(rootDir, "ml/predict.py");
+        ProcessBuilder pb = new ProcessBuilder(
+                python,
+                scriptFile.getAbsolutePath(),
+                "--model",
+                modelFile.getAbsolutePath()
+        );
+        pb.directory(rootDir);
+        pb.redirectErrorStream(true);
+
+        try {
+            Process proc = pb.start();
+            proc.getOutputStream().write(body.getBytes(StandardCharsets.UTF_8));
+            proc.getOutputStream().flush();
+            proc.getOutputStream().close();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8));
+            StringBuilder out = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                out.append(line);
+            }
+
+            boolean finished = proc.waitFor(8, TimeUnit.SECONDS);
+            if (!finished) {
+                proc.destroyForcibly();
+                send(exchange, 500, "{\"error\":\"Predictor timeout\"}");
+                System.out.println("[ML] /predict failed: timeout");
+                return;
+            }
+
+            int exit = proc.exitValue();
+            if (exit != 0) {
+                String err = out.length() == 0 ? "Predictor failed" : out.toString();
+                send(exchange, 500, "{\"error\":\"" + escape(err) + "\"}");
+                System.out.println("[ML] /predict failed: exit=" + exit);
+                return;
+            }
+
+            send(exchange, 200, out.toString());
+            System.out.println("[ML] /predict success");
+        } catch (IOException ioEx) {
+            String msg = "Python introuvable. Définissez PYTHON avec le chemin complet (ex: C:\\Users\\Mega-PC\\AppData\\Local\\Programs\\Python\\Python312\\python.exe).";
+            send(exchange, 500, "{\"error\":\"" + escape(msg) + "\"}");
+            System.out.println("[ML] /predict failed: python not found");
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            send(exchange, 500, "{\"error\":\"Predictor interrupted\"}");
+            System.out.println("[ML] /predict failed: interrupted");
+        }
+    }
+
+    private File resolveModelFile(File rootDir) {
+        String modelPath = System.getenv().getOrDefault("CARBON_MODEL_PATH", "models/carbon_model.joblib");
+        File modelFile = new File(modelPath);
+        if (!modelFile.isAbsolute()) {
+            modelFile = new File(rootDir, modelPath);
+        }
+        return modelFile;
+    }
+
+    private String resolvePythonExecutable() {
+        String env = System.getenv("PYTHON");
+        if (env != null && !env.isBlank() && new File(env).exists()) return env;
+        String envAlt = System.getenv("PYTHON_EXE_PATH");
+        if (envAlt != null && !envAlt.isBlank() && new File(envAlt).exists()) return envAlt;
+
+        String[] candidates = new String[] {
+                "C:\\Users\\Mega-PC\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+                "C:\\Users\\Mega-PC\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+                "C:\\Users\\Mega-PC\\AppData\\Local\\Programs\\Python\\Python310\\python.exe"
+        };
+        for (String c : candidates) {
+            if (new File(c).exists()) return c;
+        }
+        return "python"; // final fallback; may still fail if not on PATH
+    }
+
+    private boolean tryBuildModel(File rootDir) {
+        String python = resolvePythonExecutable();
+        if (python == null) return false;
+        File scriptFile = new File(rootDir, "ml/run_pipeline.py");
+        if (!scriptFile.exists()) return false;
+        ProcessBuilder pb = new ProcessBuilder(python, scriptFile.getAbsolutePath(), "--rows", "20000");
+        pb.directory(rootDir);
+        pb.redirectErrorStream(true);
+        try {
+            Process proc = pb.start();
+            boolean finished = proc.waitFor(120, TimeUnit.SECONDS);
+            if (!finished) {
+                proc.destroyForcibly();
+                return false;
+            }
+            return proc.exitValue() == 0;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    private File resolveProjectRoot(String start) {
+        File dir = new File(start);
+        if (!dir.exists()) return new File(System.getProperty("user.dir"));
+        File cursor = dir.isFile() ? dir.getParentFile() : dir;
+        while (cursor != null) {
+            File pom = new File(cursor, "pom.xml");
+            if (pom.exists()) return cursor;
+            cursor = cursor.getParentFile();
+        }
+        return new File(System.getProperty("user.dir"));
+    }
+
     /**
      * Handle Stripe webhook events
      * POST /webhooks/stripe
@@ -306,10 +467,10 @@ public class ApiServer {
 
     private String toJsonReferences(List<CritereReference> refs) {
         String data = refs.stream().map(r -> String.format(Locale.ROOT,
-                "{\"idCritere\":%d,\"nomCritere\":\"%s\",\"description\":\"%s\",\"poids\":%d}",
-                r.getIdCritere(), escape(r.getNomCritere()), escape(r.getDescription()), r.getPoids()))
+                        "{\"idCritere\":%d,\"nomCritere\":\"%s\",\"description\":\"%s\",\"poids\":%d}",
+                        r.getIdCritere(), escape(r.getNomCritere()), escape(r.getDescription()), r.getPoids()))
                 .collect(Collectors.joining(","));
-        return "{\"data\":[" + data + "]}";
+        return "{\"data\":[]}".replace("[]","[" + data + "]");
     }
 
     private String escape(String s) {
